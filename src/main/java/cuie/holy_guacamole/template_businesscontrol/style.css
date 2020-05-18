@@ -8,6 +8,16 @@
     -fx-background-color: transparent;
 }
 
+.business-control .starting-pane {
+    -fx-background-color: transparent;
+    -fx-padding: 10px;
+}
+
+.business-control .finishing-pane {
+    -fx-background-color: transparent;
+    -fx-padding: 10px;
+}
+
 .business-control .editable-node {
     -fx-font-family:      'Lato Regular';
     -fx-font-size:        14;
@@ -20,7 +30,12 @@
     -fx-highlight-fill:   derive(-base-color, -30%);
 }
 
-.business-control:invalid .editable-node {
+.business-control:invalid .starting-node {
+    -fx-font-family: 'Lato Light';
+    -fx-text-fill:   red;
+}
+
+.business-control:invalid .finishing-node {
     -fx-font-family: 'Lato Light';
     -fx-text-fill:   red;
 }

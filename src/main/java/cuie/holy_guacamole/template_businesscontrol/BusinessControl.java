@@ -16,18 +16,22 @@ import javafx.scene.text.Font;
 //todo: umbenennen
 public class BusinessControl extends Control {
     private static final PseudoClass MANDATORY_CLASS = PseudoClass.getPseudoClass("mandatory");
-    private static final PseudoClass INVALID_CLASS   = PseudoClass.getPseudoClass("invalid");
+    private static final PseudoClass STARTING_INVALID_CLASS = PseudoClass.getPseudoClass("starting-invalid");
+    private static final PseudoClass FINISHING_INVALID_CLASS = PseudoClass.getPseudoClass("finishing-invalid");
 
 
     //todo: durch die eigenen regulaeren Ausdruecke ersetzen
     static final String FORMATTED_INTEGER_PATTERN = "%,d";
 
-    private static final String INTEGER_REGEX    = "[+-]?[\\d']{1,14}";
+    private static final String INTEGER_REGEX = "[+-]?[\\d']{1,14}";
     private static final Pattern INTEGER_PATTERN = Pattern.compile(INTEGER_REGEX);
 
     //todo: Integer bei Bedarf ersetzen
-    private final IntegerProperty value = new SimpleIntegerProperty();
-    private final StringProperty userFacingText = new SimpleStringProperty();
+    private final IntegerProperty startingValue = new SimpleIntegerProperty();
+    private final StringProperty startingUserFacingText = new SimpleStringProperty();
+
+    private final IntegerProperty finishingValue = new SimpleIntegerProperty();
+    private final StringProperty finishingUserFacingText = new SimpleStringProperty();
 
     private final BooleanProperty mandatory = new SimpleBooleanProperty() {
         @Override
@@ -36,18 +40,27 @@ public class BusinessControl extends Control {
         }
     };
 
-    private final BooleanProperty invalid = new SimpleBooleanProperty(false) {
+    private final BooleanProperty startingInvalid = new SimpleBooleanProperty(false) {
         @Override
         protected void invalidated() {
-            pseudoClassStateChanged(INVALID_CLASS, get());
+            pseudoClassStateChanged(STARTING_INVALID_CLASS, get());
+        }
+    };
+
+    private final BooleanProperty finishingInvalid = new SimpleBooleanProperty(false) {
+        @Override
+        protected void invalidated() {
+            pseudoClassStateChanged(FINISHING_INVALID_CLASS, get());
         }
     };
 
     //todo: ergaenzen um convertible
 
-    private final BooleanProperty readOnly     = new SimpleBooleanProperty();
-    private final StringProperty  label        = new SimpleStringProperty();
-    private final StringProperty  errorMessage = new SimpleStringProperty();
+    private final BooleanProperty readOnly = new SimpleBooleanProperty();
+    private final StringProperty startingLabel = new SimpleStringProperty();
+    private final StringProperty finishingLabel = new SimpleStringProperty();
+    private final StringProperty startingErrorMessage = new SimpleStringProperty();
+    private final StringProperty finishingErrorMessage = new SimpleStringProperty();
 
 
     public BusinessControl() {
@@ -61,59 +74,84 @@ public class BusinessControl extends Control {
     }
 
     public void reset() {
-        setUserFacingText(convertToString(getValue()));
+        setStartingUserFacingText(convertToString(getStartingValue()));
+        setFinishingUserFacingText(convertToString(getFinishingValue()));
     }
 
     public void increase() {
-        setValue(getValue() + 1);
+        setStartingValue(getStartingValue() + 1);
     }
 
     public void decrease() {
-        setValue(getValue() - 1);
+        setStartingValue(getStartingValue() - 1);
     }
 
     private void initializeSelf() {
-         getStyleClass().add("business-control");
+        getStyleClass().add("business-control");
 
-         setUserFacingText(convertToString(getValue()));
+        setStartingUserFacingText(convertToString(getStartingValue()));
+        setFinishingUserFacingText(convertToString(getFinishingValue()));
     }
 
     //todo: durch geeignete Konvertierungslogik ersetzen
     private void addValueChangeListener() {
-        userFacingText.addListener((observable, oldValue, userInput) -> {
+        startingUserFacingText.addListener((observable, oldValue, userInput) -> {
             if (isMandatory() && (userInput == null || userInput.isEmpty())) {
-                setInvalid(true);
-                setErrorMessage("Mandatory Field");
+                setStartingInvalid(true);
+                setStartingErrorMessage("Mandatory Field");
                 return;
             }
 
             if (isInteger(userInput)) {
-                setInvalid(false);
-                setErrorMessage(null);
-                setValue(convertToInt(userInput));
+                setStartingInvalid(false);
+                setStartingErrorMessage(null);
+                setStartingValue(convertToInt(userInput));
             } else {
-                setInvalid(true);
-                setErrorMessage("Not an Integer");
+                setStartingInvalid(true);
+                setStartingErrorMessage("Not an Integer");
             }
         });
 
-        valueProperty().addListener((observable, oldValue, newValue) -> {
-            setInvalid(false);
-            setErrorMessage(null);
-            setUserFacingText(convertToString(newValue.intValue()));
+        finishingUserFacingText.addListener((observable, oldValue, userInput) -> {
+            if (isMandatory() && (userInput == null || userInput.isEmpty())) {
+                setFinishingInvalid(true);
+                setFinishingErrorMessage("Mandatory Field");
+                return;
+            }
+
+            if (isInteger(userInput)) {
+                setFinishingInvalid(false);
+                setFinishingErrorMessage(null);
+                setFinishingValue(convertToInt(userInput));
+            } else {
+                setFinishingInvalid(true);
+                setFinishingErrorMessage("Not an Integer");
+            }
+        });
+
+        startingValueProperty().addListener((observable, oldValue, newValue) -> {
+            setStartingInvalid(false);
+            setStartingErrorMessage(null);
+            setStartingUserFacingText(convertToString(newValue.intValue()));
+        });
+
+        finishingValueProperty().addListener((observable, oldValue, newValue) -> {
+            setFinishingInvalid(false);
+            setFinishingErrorMessage(null);
+            setFinishingUserFacingText(convertToString(newValue.intValue()));
         });
     }
 
     //todo: Forgiving Format implementieren
 
-    public void loadFonts(String... font){
-        for(String f : font){
+    public void loadFonts(String... font) {
+        for (String f : font) {
             Font.loadFont(getClass().getResourceAsStream(f), 0);
         }
     }
 
-    public void addStylesheetFiles(String... stylesheetFile){
-        for(String file : stylesheetFile){
+    public void addStylesheetFiles(String... stylesheetFile) {
+        for (String file : stylesheetFile) {
             String stylesheet = getClass().getResource(file).toExternalForm();
             getStylesheets().add(stylesheet);
         }
@@ -133,16 +171,16 @@ public class BusinessControl extends Control {
 
 
     // alle  Getter und Setter
-    public int getValue() {
-        return value.get();
+    public int getStartingValue() {
+        return startingValue.get();
     }
 
-    public IntegerProperty valueProperty() {
-        return value;
+    public IntegerProperty startingValueProperty() {
+        return startingValue;
     }
 
-    public void setValue(int value) {
-        this.value.set(value);
+    public void setStartingValue(int startingValue) {
+        this.startingValue.set(startingValue);
     }
 
     public boolean isReadOnly() {
@@ -169,57 +207,111 @@ public class BusinessControl extends Control {
         this.mandatory.set(mandatory);
     }
 
-    public String getLabel() {
-        return label.get();
+    public String getStartingLabel() {
+        return startingLabel.get();
     }
 
-    public StringProperty labelProperty() {
-        return label;
+    public StringProperty startingLabelProperty() {
+        return startingLabel;
     }
 
-    public void setLabel(String label) {
-        this.label.set(label);
+    public void setStartingLabel(String startingLabel) {
+        this.startingLabel.set(startingLabel);
     }
 
-    public boolean getInvalid() {
-        return invalid.get();
+    public String getFinishingLabel() {
+        return finishingLabel.get();
     }
 
-    public BooleanProperty invalidProperty() {
-        return invalid;
+    public StringProperty finishingLabelProperty() {
+        return finishingLabel;
     }
 
-    public void setInvalid(boolean invalid) {
-        this.invalid.set(invalid);
+    public void setFinishingLabel(String finishingLabel) {
+        this.finishingLabel.set(finishingLabel);
     }
 
-    public String getErrorMessage() {
-        return errorMessage.get();
+    public BooleanProperty startingInvalidProperty() {
+        return startingInvalid;
     }
 
-    public StringProperty errorMessageProperty() {
-        return errorMessage;
+    public void setStartingInvalid(boolean startingInvalid) {
+        this.startingInvalid.set(startingInvalid);
     }
 
-    public void setErrorMessage(String errorMessage) {
-        this.errorMessage.set(errorMessage);
+    public boolean getStartingInvalid() {
+        return startingInvalid.get();
     }
 
-    public String getUserFacingText() {
-        return userFacingText.get();
+    public BooleanProperty finishingInvalidProperty() {
+        return finishingInvalid;
     }
 
-    public StringProperty userFacingTextProperty() {
-        return userFacingText;
+    public void setFinishingInvalid(boolean finishingInvalid) {
+        this.finishingInvalid.set(finishingInvalid);
     }
 
-    public void setUserFacingText(String userFacingText) {
-        this.userFacingText.set(userFacingText);
+    public boolean getFinishingInvalid() {
+        return finishingInvalid.get();
     }
 
-    public boolean isInvalid() {
-        return invalid.get();
+    public String getStartingErrorMessage() {
+        return startingErrorMessage.get();
     }
 
+    public StringProperty startingErrorMessageProperty() {
+        return startingErrorMessage;
+    }
 
+    public void setStartingErrorMessage(String startingErrorMessage) {
+        this.startingErrorMessage.set(startingErrorMessage);
+    }
+
+    public String getFinishingErrorMessage() {
+        return finishingErrorMessage.get();
+    }
+
+    public StringProperty finishingErrorMessageProperty() {
+        return finishingErrorMessage;
+    }
+
+    public void setFinishingErrorMessage(String finishingErrorMessage) {
+        this.finishingErrorMessage.set(finishingErrorMessage);
+    }
+
+    public String getStartingUserFacingText() {
+        return startingUserFacingText.get();
+    }
+
+    public StringProperty startingUserFacingTextProperty() {
+        return startingUserFacingText;
+    }
+
+    public void setStartingUserFacingText(String startingUserFacingText) {
+        this.startingUserFacingText.set(startingUserFacingText);
+    }
+
+    public int getFinishingValue() {
+        return finishingValue.get();
+    }
+
+    public IntegerProperty finishingValueProperty() {
+        return finishingValue;
+    }
+
+    public void setFinishingValue(int finishingValue) {
+        this.finishingValue.set(finishingValue);
+    }
+
+    public String getFinishingUserFacingText() {
+        return finishingUserFacingText.get();
+    }
+
+    public StringProperty finishingUserFacingTextProperty() {
+        return finishingUserFacingText;
+    }
+
+    public void setFinishingUserFacingText(String finishingUserFacingText) {
+        this.finishingUserFacingText.set(finishingUserFacingText);
+    }
 }

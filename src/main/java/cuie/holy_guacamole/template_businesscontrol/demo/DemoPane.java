@@ -15,8 +15,8 @@ class DemoPane extends BorderPane {
 
     private Slider ageSlider;
 
-    private CheckBox  readOnlyBox;
-    private CheckBox  mandatoryBox;
+    private CheckBox readOnlyBox;
+    private CheckBox mandatoryBox;
     private TextField labelField;
 
     private PresentationModel model;
@@ -49,11 +49,11 @@ class DemoPane extends BorderPane {
     private void layoutControls() {
         setCenter(businessControl);
         VBox box = new VBox(10,
-                            new Label("Business Control Properties"),
-                            new Label("Age")      , ageSlider,
-                            new Label("readOnly") , readOnlyBox,
-                            new Label("mandatory"), mandatoryBox,
-                            new Label("Label")    , labelField);
+                new Label("Business Control Properties"),
+                new Label("Age"), ageSlider,
+                new Label("readOnly"), readOnlyBox,
+                new Label("mandatory"), mandatoryBox,
+                new Label("Label"), labelField);
         box.setPadding(new Insets(10));
         box.setSpacing(10);
         setRight(box);
@@ -63,15 +63,15 @@ class DemoPane extends BorderPane {
     }
 
     private void setupBindings() {
-        ageSlider.valueProperty()      .bindBidirectional(model.ageProperty());
-        labelField.textProperty()      .bindBidirectional(model.age_LabelProperty());
-        readOnlyBox.selectedProperty() .bindBidirectional(model.age_readOnlyProperty());
-        mandatoryBox.selectedProperty().bindBidirectional(model.age_mandatoryProperty());
+        ageSlider.valueProperty().bindBidirectional(model.startingYearProperty());
+        labelField.textProperty().bindBidirectional(model.startingYearLabelProperty());
+        readOnlyBox.selectedProperty().bindBidirectional(model.startingYearReadOnlyProperty());
+        mandatoryBox.selectedProperty().bindBidirectional(model.startingYearMandatoryProperty());
 
-        businessControl.valueProperty()    .bindBidirectional(model.ageProperty());
-        businessControl.labelProperty()    .bind(model.age_LabelProperty());
-        businessControl.readOnlyProperty() .bind(model.age_readOnlyProperty());
-        businessControl.mandatoryProperty().bind(model.age_mandatoryProperty());
+        businessControl.startingValueProperty().bindBidirectional(model.startingYearProperty());
+        businessControl.startingLabelProperty().bind(model.startingYearLabelProperty());
+        businessControl.readOnlyProperty().bind(model.startingYearReadOnlyProperty());
+        businessControl.mandatoryProperty().bind(model.startingYearMandatoryProperty());
     }
 
 }

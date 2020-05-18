@@ -8,56 +8,109 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
 public class PresentationModel {
-    private final IntegerProperty age           = new SimpleIntegerProperty(42);
-    private final StringProperty  age_Label     = new SimpleStringProperty("Age");
-    private final BooleanProperty age_readOnly  = new SimpleBooleanProperty(false);
-    private final BooleanProperty age_mandatory = new SimpleBooleanProperty(true);
+    private final IntegerProperty startingYear = new SimpleIntegerProperty(2008);
+    private final StringProperty startingYearLabel = new SimpleStringProperty("Starting Year");
+    private final BooleanProperty startingYearReadOnly = new SimpleBooleanProperty(false);
+    private final BooleanProperty startingYearMandatory = new SimpleBooleanProperty(true);
 
-    public int getAge() {
-        return age.get();
+    private final IntegerProperty finishingYear = new SimpleIntegerProperty(2012);
+    private final StringProperty finishingYearLabel = new SimpleStringProperty("Finishing Year");
+    private final BooleanProperty finishingYearReadOnly = new SimpleBooleanProperty(false);
+    private final BooleanProperty finishingYearMandatory = new SimpleBooleanProperty(true);
+
+    public int getStartingYear() {
+        return startingYear.get();
     }
 
-    public IntegerProperty ageProperty() {
-        return age;
+    public IntegerProperty startingYearProperty() {
+        return startingYear;
     }
 
-    public void setAge(int age) {
-        this.age.set(age);
+    public void setStartingYear(int startingYear) {
+        this.startingYear.set(startingYear);
     }
 
-    public String getAge_Label() {
-        return age_Label.get();
+    public String getStartingYearLabel() {
+        return startingYearLabel.get();
     }
 
-    public StringProperty age_LabelProperty() {
-        return age_Label;
+    public StringProperty startingYearLabelProperty() {
+        return startingYearLabel;
     }
 
-    public void setAge_Label(String age_Label) {
-        this.age_Label.set(age_Label);
+    public void setStartingYearLabel(String startingYearLabel) {
+        this.startingYearLabel.set(startingYearLabel);
     }
 
-    public boolean isAge_readOnly() {
-        return age_readOnly.get();
+    public boolean getStartingYearReadOnly() {
+        return startingYearReadOnly.get();
     }
 
-    public BooleanProperty age_readOnlyProperty() {
-        return age_readOnly;
+    public BooleanProperty startingYearReadOnlyProperty() {
+        return startingYearReadOnly;
     }
 
-    public void setAge_readOnly(boolean age_readOnly) {
-        this.age_readOnly.set(age_readOnly);
+    public void setStartingYearReadOnly(boolean startingYearReadOnly) {
+        this.startingYearReadOnly.set(startingYearReadOnly);
     }
 
-    public boolean isAge_mandatory() {
-        return age_mandatory.get();
+    public boolean getStartingYearMandatory() {
+        return startingYearMandatory.get();
     }
 
-    public BooleanProperty age_mandatoryProperty() {
-        return age_mandatory;
+    public BooleanProperty startingYearMandatoryProperty() {
+        return startingYearMandatory;
     }
 
-    public void setAge_mandatory(boolean age_mandatory) {
-        this.age_mandatory.set(age_mandatory);
+    public void setStartingYearMandatory(boolean startingYearMandatory) {
+        this.startingYearMandatory.set(startingYearMandatory);
+    }
+
+    public int getFinishingYear() {
+        return finishingYear.get();
+    }
+
+    public IntegerProperty finishingYearProperty() {
+        return finishingYear;
+    }
+
+    public void setFinishingYear(int finishingYear) {
+        this.finishingYear.set(finishingYear);
+    }
+
+    public String getFinishingYearLabel() {
+        return finishingYearLabel.get();
+    }
+
+    public StringProperty finishingYearLabelProperty() {
+        return finishingYearLabel;
+    }
+
+    public void setFinishingYearLabel(String finishingYearLabel) {
+        this.finishingYearLabel.set(finishingYearLabel);
+    }
+
+    public boolean isFinishingYearReadOnly() {
+        return finishingYearReadOnly.get();
+    }
+
+    public BooleanProperty finishingYearReadOnlyProperty() {
+        return finishingYearReadOnly;
+    }
+
+    public void setFinishingYearReadOnly(boolean finishingYearReadOnly) {
+        this.finishingYearReadOnly.set(finishingYearReadOnly);
+    }
+
+    public boolean isFinishingYearMandatory() {
+        return finishingYearMandatory.get();
+    }
+
+    public BooleanProperty finishingYearMandatoryProperty() {
+        return finishingYearMandatory;
+    }
+
+    public void setFinishingYearMandatory(boolean finishingYearMandatory) {
+        this.finishingYearMandatory.set(finishingYearMandatory);
     }
 }
