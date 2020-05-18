@@ -2,7 +2,8 @@
 
 === Bearbeitet von
 
-* _Vorname Nachname_
+* _Marco Inniger_
+* _Jan Sedelmeier_
 
 === Integriert in die OOP2-Projekte von
 
