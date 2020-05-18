@@ -1,4 +1,4 @@
-package cuie.project.template_businesscontrol.demo;
+package cuie.holy_guacamole.template_businesscontrol.demo;
 
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.IntegerProperty;
