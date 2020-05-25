@@ -13,7 +13,8 @@ import cuie.holy_guacamole.template_businesscontrol.BusinessControl;
 class DemoPane extends BorderPane {
     private BusinessControl businessControl;
 
-    private Slider ageSlider;
+    private Slider startingYearSlider;
+    private Slider finishingYearSlider;
 
     private CheckBox readOnlyBox;
     private CheckBox mandatoryBox;
@@ -35,7 +36,8 @@ class DemoPane extends BorderPane {
 
         businessControl = new BusinessControl();
 
-        ageSlider = new Slider(0, 130, 0);
+        startingYearSlider = new Slider(1900, 2030, 0);
+        finishingYearSlider = new Slider(1900, 2030, 0);
 
         readOnlyBox = new CheckBox();
         readOnlyBox.setSelected(false);
@@ -50,7 +52,8 @@ class DemoPane extends BorderPane {
         setCenter(businessControl);
         VBox box = new VBox(10,
                 new Label("Business Control Properties"),
-                new Label("Age"), ageSlider,
+                new Label("Starting Year"), startingYearSlider,
+                new Label("Finishing Year"), finishingYearSlider,
                 new Label("readOnly"), readOnlyBox,
                 new Label("mandatory"), mandatoryBox,
                 new Label("Label"), labelField);
@@ -63,12 +66,14 @@ class DemoPane extends BorderPane {
     }
 
     private void setupBindings() {
-        ageSlider.valueProperty().bindBidirectional(model.startingYearProperty());
+        startingYearSlider.valueProperty().bindBidirectional(model.startingYearProperty());
+        finishingYearSlider.valueProperty().bindBidirectional(model.finishingYearProperty());
         labelField.textProperty().bindBidirectional(model.startingYearLabelProperty());
         readOnlyBox.selectedProperty().bindBidirectional(model.startingYearReadOnlyProperty());
         mandatoryBox.selectedProperty().bindBidirectional(model.startingYearMandatoryProperty());
 
         businessControl.startingValueProperty().bindBidirectional(model.startingYearProperty());
+        businessControl.finishingValueProperty().bindBidirectional(model.finishingYearProperty());
         businessControl.startingLabelProperty().bind(model.startingYearLabelProperty());
         businessControl.readOnlyProperty().bind(model.startingYearReadOnlyProperty());
         businessControl.mandatoryProperty().bind(model.startingYearMandatoryProperty());
