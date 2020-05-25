@@ -23,7 +23,7 @@ public class BusinessControl extends Control {
     //todo: durch die eigenen regulaeren Ausdruecke ersetzen
     static final String FORMATTED_INTEGER_PATTERN = "%d";
 
-    private static final String INTEGER_REGEX = "(19|2[0-9])[0-9]{2}";
+    private static final String INTEGER_REGEX = "(19|20)[0-9]{2}";
     private static final Pattern INTEGER_PATTERN = Pattern.compile(INTEGER_REGEX);
 
     //todo: Integer bei Bedarf ersetzen
