@@ -62,7 +62,7 @@ public class SimpleControl extends Region {
 
     private static final double MAXIMUM_WIDTH = 800;    // ToDo: Anpassen
 
-    private static double scalingFactor;
+    private static double width;
 
     // ToDo: diese Parts durch alle notwendigen Parts der gewünschten CustomControl ersetzen
     private Circle leftThumb;
@@ -129,13 +129,13 @@ public class SimpleControl extends Region {
         //ToDo: alle deklarierten Parts initialisieren
         double center = ARTBOARD_WIDTH * 0.5;
 
-        leftThumb = new Circle(center - MARGIN * 3, center, MARGIN);
+        leftThumb = new Circle(MARGIN + MARGIN * 3, MARGIN, MARGIN/2);
         leftThumb.getStyleClass().add("left-thumb");
 
-        rightThumb = new Circle(center + MARGIN * 3, center, MARGIN);
+        rightThumb = new Circle(MARGIN + MARGIN * 6, MARGIN, MARGIN/2);
         rightThumb.getStyleClass().add("right-thumb");
 
-        display = new Line(MARGIN, center, ARTBOARD_WIDTH - MARGIN, center);
+        display = new Line(MARGIN, MARGIN, ARTBOARD_WIDTH - MARGIN, MARGIN);
     }
 
     private void initializeDrawingPane() {
@@ -180,7 +180,7 @@ public class SimpleControl extends Region {
     private void updateUI() {
         //ToDo : ergaenzen mit dem was bei einer Wertaenderung einer Status-Property im UI upgedated werden muss
         double position = valueToMousePosition(getValue());
-        if(position > MARGIN && position < ARTBOARD_WIDTH - MARGIN) {
+        if(position > MARGIN && position < width - MARGIN) {
             leftThumb.setCenterX(position);
         }
     }
@@ -210,15 +210,16 @@ public class SimpleControl extends Region {
         double availableWidth = getWidth() - padding.getLeft() - padding.getRight();
         double availableHeight = getHeight() - padding.getTop() - padding.getBottom();
 
-        double width = Math.max(Math.min(Math.min(availableWidth, availableHeight * ASPECT_RATIO), MAXIMUM_WIDTH), MINIMUM_WIDTH);
-
-        scalingFactor = width / ARTBOARD_WIDTH;
+        width = availableWidth;
 
         if (availableWidth > 0 && availableHeight > 0) {
             //ToDo: ueberpruefen ob die drawingPane immer zentriert werden soll (eventuell ist zum Beispiel linksbuendig angemessener)
-            relocateDrawingPaneCentered();
-            drawingPane.setScaleX(scalingFactor);
-            drawingPane.setScaleY(scalingFactor);
+            display.setStartX(MARGIN);
+            display.setStartY(MARGIN);
+            display.setEndX(availableWidth - MARGIN);
+            display.setEndY(MARGIN);
+//            drawingPane.setScaleX(scalingFactor);
+//            drawingPane.setScaleY(scalingFactor);
         }
     }
 
@@ -317,11 +318,11 @@ public class SimpleControl extends Region {
     }
 
     private double mousePositionToValue(MouseEvent event) {
-        return ((event.getSceneX() - 5 * scalingFactor) / (getWidth() - 10 * scalingFactor)) * 100;
+        return ((event.getSceneX() - MARGIN / 2) / (getWidth() - MARGIN * 2)) * 100;
     }
 
     private double valueToMousePosition(double value) {
-        return (getWidth() - 10 * scalingFactor) * value / 100;
+        return (getWidth() - MARGIN * 2) * value / 100;
     }
 
     /**
