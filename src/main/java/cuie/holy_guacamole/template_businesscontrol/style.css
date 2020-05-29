@@ -40,6 +40,16 @@
     -fx-text-fill:   red;
 }
 
+.business-control:convertible .starting-node {
+    -fx-font-family: 'Lato Light';
+    -fx-text-fill:   green;
+}
+
+.business-control:convertible .finishing-node {
+    -fx-font-family: 'Lato Light';
+    -fx-text-fill:   green;
+}
+
 .business-control:mandatory .editable-node {
     -fx-background-color: white;
     -fx-border-color:     derive(-base-color, -30%);

@@ -33,7 +33,8 @@ class BusinessSkin extends SkinBase<BusinessControl> {
 
     private enum StartingState {
         VALID("Valid", "valid.png"),
-        INVALID("Invalid", "invalid.png");
+        INVALID("Invalid", "invalid.png"),
+        CONVERTIBLE("Convertible", "optional.png");
 
         public final String text;
         public final ImageView imageView;
@@ -49,7 +50,8 @@ class BusinessSkin extends SkinBase<BusinessControl> {
 
     private enum FinishingState {
         VALID("Valid", "valid.png"),
-        INVALID("Invalid", "invalid.png");
+        INVALID("Invalid", "invalid.png"),
+        CONVERTIBLE("Convertible", "optional.png");
 
         public final String text;
         public final ImageView imageView;
@@ -230,17 +232,46 @@ class BusinessSkin extends SkinBase<BusinessControl> {
         startingYear.setOnKeyPressed(event -> {
             switch (event.getCode()) {
                 case ESCAPE:
-                    getSkinnable().reset();
+                    getSkinnable().resetStarting();
                     event.consume();
                     break;
                 case UP:
-                    getSkinnable().increase();
+                    getSkinnable().increaseStarting();
                     event.consume();
                     break;
                 case DOWN:
-                    getSkinnable().decrease();
+                    getSkinnable().decreaseStarting();
                     event.consume();
                     break;
+                case ENTER:
+                    if (getSkinnable().isStartingConvertible()) {
+                        getSkinnable().completeStarting();
+                        event.consume();
+                        break;
+                    }
+            }
+        });
+
+        finishingYear.setOnKeyPressed(event -> {
+            switch (event.getCode()) {
+                case ESCAPE:
+                    getSkinnable().resetFinishing();
+                    event.consume();
+                    break;
+                case UP:
+                    getSkinnable().increaseFinishing();
+                    event.consume();
+                    break;
+                case DOWN:
+                    getSkinnable().decreaseFinishing();
+                    event.consume();
+                    break;
+                case ENTER:
+                    if (getSkinnable().isFinishingConvertible()) {
+                        getSkinnable().completeFinishing();
+                        event.consume();
+                        break;
+                    }
             }
         });
     }
@@ -256,7 +287,7 @@ class BusinessSkin extends SkinBase<BusinessControl> {
         });
 
         getSkinnable().finishingInvalidProperty().addListener((observable, oldValue, newValue) -> {
-            if(newValue) {
+            if (newValue) {
                 startInvalidFinishingInputAnimation();
             } else {
                 FinishingState.VALID.imageView.setOpacity(1.0);
@@ -285,18 +316,24 @@ class BusinessSkin extends SkinBase<BusinessControl> {
         finishingReadOnlyYear.visibleProperty().bind(getSkinnable().readOnlyProperty());
 
         StartingState.INVALID.imageView.visibleProperty().bind(getSkinnable().startingInvalidProperty());
+        StartingState.CONVERTIBLE.imageView.visibleProperty().bind(getSkinnable().startingConvertibleProperty());
 
         FinishingState.INVALID.imageView.visibleProperty().bind(getSkinnable().finishingInvalidProperty());
+        FinishingState.CONVERTIBLE.imageView.visibleProperty().bind(getSkinnable().finishingConvertibleProperty());
 
         StartingState.INVALID.imageView.xProperty().bind(startingYear.translateXProperty().add(startingYear.layoutXProperty()).subtract(IMG_OFFSET));
         StartingState.INVALID.imageView.yProperty().bind(startingYear.translateYProperty().add(startingYear.layoutYProperty()).subtract(IMG_OFFSET));
         StartingState.VALID.imageView.xProperty().bind(startingYear.layoutXProperty().subtract(IMG_OFFSET));
         StartingState.VALID.imageView.yProperty().bind(startingYear.layoutYProperty().subtract(IMG_OFFSET));
+        StartingState.CONVERTIBLE.imageView.xProperty().bind(startingYear.translateXProperty().add(startingYear.layoutXProperty().subtract(IMG_OFFSET)));
+        StartingState.CONVERTIBLE.imageView.yProperty().bind(startingYear.translateYProperty().add(startingYear.layoutYProperty().subtract(IMG_OFFSET)));
 
         FinishingState.INVALID.imageView.xProperty().bind(finishingYear.translateXProperty().add(finishingYear.layoutXProperty()).subtract(IMG_OFFSET));
         FinishingState.INVALID.imageView.yProperty().bind(finishingYear.translateYProperty().add(finishingYear.layoutYProperty()).subtract(IMG_OFFSET));
         FinishingState.VALID.imageView.xProperty().bind(finishingYear.layoutXProperty().subtract(IMG_OFFSET));
         FinishingState.VALID.imageView.yProperty().bind(finishingYear.layoutYProperty().subtract(IMG_OFFSET));
+        FinishingState.CONVERTIBLE.imageView.xProperty().bind(finishingYear.translateXProperty().add(finishingYear.layoutXProperty().subtract(IMG_OFFSET)));
+        FinishingState.CONVERTIBLE.imageView.yProperty().bind(finishingYear.translateYProperty().add(finishingYear.layoutYProperty().subtract(IMG_OFFSET)));
     }
 
     private void startFadeOutValidStartingIconTransition() {

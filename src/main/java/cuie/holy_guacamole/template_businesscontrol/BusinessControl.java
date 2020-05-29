@@ -18,13 +18,17 @@ public class BusinessControl extends Control {
     private static final PseudoClass MANDATORY_CLASS = PseudoClass.getPseudoClass("mandatory");
     private static final PseudoClass STARTING_INVALID_CLASS = PseudoClass.getPseudoClass("starting-invalid");
     private static final PseudoClass FINISHING_INVALID_CLASS = PseudoClass.getPseudoClass("finishing-invalid");
+    private static final PseudoClass STARTING_CONVERTIBLE_CLASS = PseudoClass.getPseudoClass("starting-convertible");
+    private static final PseudoClass FINISHING_CONVERTIBLE_CLASS = PseudoClass.getPseudoClass("finishing-convertible");
 
 
     //todo: durch die eigenen regulaeren Ausdruecke ersetzen
     static final String FORMATTED_INTEGER_PATTERN = "%d";
 
     private static final String INTEGER_REGEX = "(19|20)[0-9]{2}";
+    private static final String CONVERTING_REGEX = "[0-9]{2}";
     private static final Pattern INTEGER_PATTERN = Pattern.compile(INTEGER_REGEX);
+    private static final Pattern CONVERTING_PATTERN = Pattern.compile(CONVERTING_REGEX);
 
     //todo: Integer bei Bedarf ersetzen
     private final IntegerProperty startingValue = new SimpleIntegerProperty();
@@ -54,6 +58,20 @@ public class BusinessControl extends Control {
         }
     };
 
+    private final BooleanProperty startingConvertible = new SimpleBooleanProperty(false) {
+        @Override
+        protected void invalidated() {
+            pseudoClassStateChanged(STARTING_CONVERTIBLE_CLASS, get());
+        }
+    };
+
+    private final BooleanProperty finishingConvertible = new SimpleBooleanProperty(false) {
+        @Override
+        protected void invalidated() {
+            pseudoClassStateChanged(FINISHING_CONVERTIBLE_CLASS, get());
+        }
+    };
+
     //todo: ergaenzen um convertible
 
     private final BooleanProperty readOnly = new SimpleBooleanProperty();
@@ -73,17 +91,49 @@ public class BusinessControl extends Control {
         return new BusinessSkin(this);
     }
 
-    public void reset() {
+    public void resetStarting() {
         setStartingUserFacingText(convertToString(getStartingValue()));
-        setFinishingUserFacingText(convertToString(getFinishingValue()));
     }
 
-    public void increase() {
+    public void increaseStarting() {
         setStartingValue(getStartingValue() + 1);
     }
 
-    public void decrease() {
+    public void decreaseStarting() {
         setStartingValue(getStartingValue() - 1);
+    }
+
+    public void completeStarting() {
+        int year = getStartingValue() % 100;
+        if (year >= 50) {
+            year += 1900;
+        } else {
+            year += 2000;
+        }
+        setStartingValue(year);
+        setFinishingValue(year + 3);
+    }
+
+    public void resetFinishing() {
+        setFinishingUserFacingText(convertToString(getFinishingValue()));
+    }
+
+    public void increaseFinishing() {
+        setFinishingValue(getFinishingValue() + 1);
+    }
+
+    public void decreaseFinishing() {
+        setFinishingValue(getFinishingValue() - 1);
+    }
+
+    public void completeFinishing() {
+        int year = getFinishingValue() % 100;
+        if (year >= 50) {
+            year += 1900;
+        } else {
+            year += 2000;
+        }
+        setFinishingValue(year);
     }
 
     private void initializeSelf() {
@@ -102,13 +152,27 @@ public class BusinessControl extends Control {
                 return;
             }
 
-            if (isInteger(userInput)) {
+            if (isInteger(userInput) | isConvertible(userInput)) {
                 setStartingInvalid(false);
                 setStartingErrorMessage(null);
                 setStartingValue(convertToInt(userInput));
+                setStartingConvertible(false);
             } else {
+                setStartingConvertible(false);
                 setStartingInvalid(true);
                 setStartingErrorMessage("Not an Integer");
+            }
+
+            if(finishingLowerStarting()) {
+                setStartingInvalid(true);
+                setFinishingInvalid(true);
+            } else {
+                setFinishingInvalid(false);
+            }
+
+            if (isConvertible(userInput)) {
+                setStartingConvertible(true);
+                setStartingInvalid(false);
             }
         });
 
@@ -119,13 +183,26 @@ public class BusinessControl extends Control {
                 return;
             }
 
-            if (isInteger(userInput)) {
+            if (isInteger(userInput) | isConvertible(userInput)) {
                 setFinishingInvalid(false);
                 setFinishingErrorMessage(null);
                 setFinishingValue(convertToInt(userInput));
+                setFinishingConvertible(false);
             } else {
                 setFinishingInvalid(true);
                 setFinishingErrorMessage("Not an Integer");
+            }
+
+            if(finishingLowerStarting()) {
+                setStartingInvalid(true);
+                setFinishingInvalid(true);
+            } else {
+                setStartingInvalid(false);
+            }
+
+            if (isConvertible(userInput)) {
+                setFinishingConvertible(true);
+                setFinishingInvalid(false);
             }
         });
 
@@ -159,6 +236,14 @@ public class BusinessControl extends Control {
 
     private boolean isInteger(String userInput) {
         return INTEGER_PATTERN.matcher(userInput).matches();
+    }
+
+    private boolean finishingLowerStarting() {
+        return (getStartingValue() > getFinishingValue());
+    }
+
+    private boolean isConvertible(String userInput) {
+        return CONVERTING_PATTERN.matcher(userInput).matches();
     }
 
     private int convertToInt(String userInput) {
@@ -313,5 +398,29 @@ public class BusinessControl extends Control {
 
     public void setFinishingUserFacingText(String finishingUserFacingText) {
         this.finishingUserFacingText.set(finishingUserFacingText);
+    }
+
+    public boolean isStartingConvertible() {
+        return startingConvertible.get();
+    }
+
+    public BooleanProperty startingConvertibleProperty() {
+        return startingConvertible;
+    }
+
+    public void setStartingConvertible(boolean startingConvertible) {
+        this.startingConvertible.set(startingConvertible);
+    }
+
+    public boolean isFinishingConvertible() {
+        return finishingConvertible.get();
+    }
+
+    public BooleanProperty finishingConvertibleProperty() {
+        return finishingConvertible;
+    }
+
+    public void setFinishingConvertible(boolean finishingConvertible) {
+        this.finishingConvertible.set(finishingConvertible);
     }
 }
