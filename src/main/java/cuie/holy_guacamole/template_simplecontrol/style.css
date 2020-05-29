@@ -1,10 +1,14 @@
 .simple-control {
     -fx-padding:          5;
-    -fx-background-color: rgb(12, 12, 12);
+    -fx-background-color: white;
     -base-color:          rgb(2, 138, 204);
 }
 
-.simple-control .background-circle {
+.simple-control .left-thumb {
+    -fx-fill: -base-color;
+}
+
+.simple-control .right-thumb {
     -fx-fill: -base-color;
 }
 

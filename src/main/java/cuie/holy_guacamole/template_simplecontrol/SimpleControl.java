@@ -19,6 +19,7 @@ import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
 import javafx.geometry.VPos;
 import javafx.scene.Group;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
 import javafx.scene.paint.Color;
@@ -32,8 +33,9 @@ import javafx.util.Duration;
 
 /**
  * ToDo: CustomControl kurz beschreiben
- *
+ * <p>
  * ToDo: Autoren ergänzen / ersetzen
+ *
  * @author
  */
 //ToDo: Umbenennen.
@@ -48,19 +50,24 @@ public class SimpleControl extends Region {
 
     private static final Locale CH = new Locale("de", "CH");
 
-    private static final double ARTBOARD_WIDTH  = 100;  // ToDo: Breite der "Zeichnung" aus dem Grafik-Tool übernehmen
-    private static final double ARTBOARD_HEIGHT = 100;  // ToDo: Anpassen an die Breite der Zeichnung
+    private static final double MARGIN = 25;
+
+    private static final double ARTBOARD_WIDTH = 500;  // ToDo: Breite der "Zeichnung" aus dem Grafik-Tool übernehmen
+    private static final double ARTBOARD_HEIGHT = 500;  // ToDo: Anpassen an die Breite der Zeichnung
 
     private static final double ASPECT_RATIO = ARTBOARD_WIDTH / ARTBOARD_HEIGHT;
 
-    private static final double MINIMUM_WIDTH  = 25;    // ToDo: Anpassen
+    private static final double MINIMUM_WIDTH = 25;    // ToDo: Anpassen
     private static final double MINIMUM_HEIGHT = MINIMUM_WIDTH / ASPECT_RATIO;
 
     private static final double MAXIMUM_WIDTH = 800;    // ToDo: Anpassen
 
+    private static double scalingFactor;
+
     // ToDo: diese Parts durch alle notwendigen Parts der gewünschten CustomControl ersetzen
-    private Circle backgroundCircle;
-    private Text   display;
+    private Circle leftThumb;
+    private Circle rightThumb;
+    private Line display;
 
     // ToDo: ersetzen durch alle notwendigen Properties der CustomControl
     private final DoubleProperty value = new SimpleDoubleProperty();
@@ -77,8 +84,8 @@ public class SimpleControl extends Region {
     };
 
     // ToDo: Loeschen falls keine getaktete Animation benoetigt wird
-    private final BooleanProperty          blinking = new SimpleBooleanProperty(false);
-    private final ObjectProperty<Duration> pulse    = new SimpleObjectProperty<>(Duration.seconds(1.0));
+    private final BooleanProperty blinking = new SimpleBooleanProperty(false);
+    private final ObjectProperty<Duration> pulse = new SimpleObjectProperty<>(Duration.seconds(1.0));
 
     private final AnimationTimer timer = new AnimationTimer() {
         private long lastTimerCall;
@@ -122,33 +129,40 @@ public class SimpleControl extends Region {
         //ToDo: alle deklarierten Parts initialisieren
         double center = ARTBOARD_WIDTH * 0.5;
 
-        backgroundCircle = new Circle(center, center, center);
-        backgroundCircle.getStyleClass().add("background-circle");
+        leftThumb = new Circle(center - MARGIN * 3, center, MARGIN);
+        leftThumb.getStyleClass().add("left-thumb");
 
-        display = createCenteredText("display");
+        rightThumb = new Circle(center + MARGIN * 3, center, MARGIN);
+        rightThumb.getStyleClass().add("right-thumb");
+
+        display = new Line(MARGIN, center, ARTBOARD_WIDTH - MARGIN, center);
     }
 
     private void initializeDrawingPane() {
         drawingPane = new Pane();
         drawingPane.getStyleClass().add("drawing-pane");
-        drawingPane.setMaxSize(ARTBOARD_WIDTH,  ARTBOARD_HEIGHT);
-        drawingPane.setMinSize(ARTBOARD_WIDTH,  ARTBOARD_HEIGHT);
+        drawingPane.setMaxSize(ARTBOARD_WIDTH, ARTBOARD_HEIGHT);
+        drawingPane.setMinSize(ARTBOARD_WIDTH, ARTBOARD_HEIGHT);
         drawingPane.setPrefSize(ARTBOARD_WIDTH, ARTBOARD_HEIGHT);
     }
 
-    private void initializeAnimations(){
+    private void initializeAnimations() {
         //ToDo: alle deklarierten Animationen initialisieren
     }
 
     private void layoutParts() {
         //ToDo: alle Parts zur drawingPane hinzufügen
-        drawingPane.getChildren().addAll(backgroundCircle, display);
+        drawingPane.getChildren().addAll(display, leftThumb, rightThumb);
 
         getChildren().add(drawingPane);
     }
 
     private void setupEventHandlers() {
         //ToDo: bei Bedarf ergänzen
+        leftThumb.setOnMouseDragged(event -> {
+            double newValue = mousePositionToValue(event);
+            setValue(newValue);
+        });
     }
 
     private void setupValueChangeListeners() {
@@ -161,14 +175,17 @@ public class SimpleControl extends Region {
 
     private void setupBindings() {
         //ToDo: dieses Binding ersetzen
-        display.textProperty().bind(valueProperty().asString(CH, "%.2f"));
     }
 
-    private void updateUI(){
+    private void updateUI() {
         //ToDo : ergaenzen mit dem was bei einer Wertaenderung einer Status-Property im UI upgedated werden muss
+        double position = valueToMousePosition(getValue());
+        if(position > MARGIN && position < ARTBOARD_WIDTH - MARGIN) {
+            leftThumb.setCenterX(position);
+        }
     }
 
-    private void performPeriodicTask(){
+    private void performPeriodicTask() {
         //ToDo: ergaenzen mit dem was bei der getakteten Animation gemacht werden muss
         //normalerweise: den Wert einer der Status-Properties aendern
     }
@@ -189,13 +206,13 @@ public class SimpleControl extends Region {
 
     //ToDo: ueberpruefen ob dieser Resizing-Ansatz anwendbar ist.
     private void resize() {
-        Insets padding         = getPadding();
-        double availableWidth  = getWidth() - padding.getLeft() - padding.getRight();
+        Insets padding = getPadding();
+        double availableWidth = getWidth() - padding.getLeft() - padding.getRight();
         double availableHeight = getHeight() - padding.getTop() - padding.getBottom();
 
         double width = Math.max(Math.min(Math.min(availableWidth, availableHeight * ASPECT_RATIO), MAXIMUM_WIDTH), MINIMUM_WIDTH);
 
-        double scalingFactor = width / ARTBOARD_WIDTH;
+        scalingFactor = width / ARTBOARD_WIDTH;
 
         if (availableWidth > 0 && availableHeight > 0) {
             //ToDo: ueberpruefen ob die drawingPane immer zentriert werden soll (eventuell ist zum Beispiel linksbuendig angemessener)
@@ -211,15 +228,15 @@ public class SimpleControl extends Region {
 
     private void relocateDrawingPaneCenterBottom(double scaleY, double paddingBottom) {
         double visualHeight = ARTBOARD_HEIGHT * scaleY;
-        double visualSpace  = getHeight() - visualHeight;
-        double y            = visualSpace + (visualHeight - ARTBOARD_HEIGHT) * 0.5 - paddingBottom;
+        double visualSpace = getHeight() - visualHeight;
+        double y = visualSpace + (visualHeight - ARTBOARD_HEIGHT) * 0.5 - paddingBottom;
 
         drawingPane.relocate((getWidth() - ARTBOARD_WIDTH) * 0.5, y);
     }
 
     private void relocateDrawingPaneCenterTop(double scaleY, double paddingTop) {
         double visualHeight = ARTBOARD_HEIGHT * scaleY;
-        double y            = (visualHeight - ARTBOARD_HEIGHT) * 0.5 + paddingTop;
+        double y = (visualHeight - ARTBOARD_HEIGHT) * 0.5 + paddingTop;
 
         drawingPane.relocate((getWidth() - ARTBOARD_WIDTH) * 0.5, y);
     }
@@ -228,14 +245,14 @@ public class SimpleControl extends Region {
 
     //ToDo: diese Funktionen anschauen und für die Umsetzung des CustomControls benutzen
 
-    private void loadFonts(String... font){
-        for(String f : font){
+    private void loadFonts(String... font) {
+        for (String f : font) {
             Font.loadFont(getClass().getResourceAsStream(f), 0);
         }
     }
 
-    private void addStylesheetFiles(String... stylesheetFile){
-        for(String file : stylesheetFile){
+    private void addStylesheetFiles(String... stylesheetFile) {
+        for (String file : stylesheetFile) {
             String stylesheet = getClass().getResource(file).toExternalForm();
             getStylesheets().add(stylesheet);
         }
@@ -245,18 +262,18 @@ public class SimpleControl extends Region {
      * Umrechnen einer Prozentangabe, zwischen 0 und 100, in den tatsaechlichen Wert innerhalb des angegebenen Wertebereichs.
      *
      * @param percentage Wert in Prozent
-     * @param minValue untere Grenze des Wertebereichs
-     * @param maxValue obere Grenze des Wertebereichs
+     * @param minValue   untere Grenze des Wertebereichs
+     * @param maxValue   obere Grenze des Wertebereichs
      * @return value der akuelle Wert
      */
-    private double percentageToValue(double percentage, double minValue, double maxValue){
+    private double percentageToValue(double percentage, double minValue, double maxValue) {
         return ((maxValue - minValue) * percentage) + minValue;
     }
 
     /**
      * Umrechnen des angegebenen Werts in eine Prozentangabe zwischen 0 und 100.
      *
-     * @param value der aktuelle Wert
+     * @param value    der aktuelle Wert
      * @param minValue untere Grenze des Wertebereichs
      * @param maxValue obere Grenze des Wertebereichs
      * @return Prozentangabe des aktuellen Werts
@@ -269,7 +286,7 @@ public class SimpleControl extends Region {
      * Berechnet den Winkel zwischen 0 und 360 Grad, 0 Grad entspricht "Nord", der dem value
      * innerhalb des Wertebereichs zwischen minValue und maxValue entspricht.
      *
-     * @param value der aktuelle Wert
+     * @param value    der aktuelle Wert
      * @param minValue untere Grenze des Wertebereichs
      * @param maxValue obere Grenze des Wertebereichs
      * @return angle Winkel zwischen 0 und 360 Grad
@@ -280,46 +297,54 @@ public class SimpleControl extends Region {
 
     /**
      * Umrechnung der Maus-Position auf den aktuellen Wert.
-     *
+     * <p>
      * Diese Funktion ist sinnvoll nur fuer radiale Controls einsetzbar.
-     *
+     * <p>
      * Lineare Controls wie Slider müssen auf andere Art die Mausposition auf den value umrechnen.
      *
-     * @param mouseX x-Position der Maus
-     * @param mouseY y-Position der Maus
-     * @param cx x-Position des Zentrums des radialen Controls
-     * @param cy y-Position des Zentrums des radialen Controls
+     * @param mouseX   x-Position der Maus
+     * @param mouseY   y-Position der Maus
+     * @param cx       x-Position des Zentrums des radialen Controls
+     * @param cy       y-Position des Zentrums des radialen Controls
      * @param minValue untere Grenze des Wertebereichs
      * @param maxValue obere Grenze des Wertebereichs
      * @return value der dem Winkel entspricht, in dem die Maus zum Mittelpunkt des radialen Controls steht
      */
-    private double radialMousePositionToValue(double mouseX, double mouseY, double cx, double cy, double minValue, double maxValue){
+    private double radialMousePositionToValue(double mouseX, double mouseY, double cx, double cy, double minValue, double maxValue) {
         double percentage = angleToPercentage(angle(cx, cy, mouseX, mouseY));
 
         return percentageToValue(percentage, minValue, maxValue);
     }
 
+    private double mousePositionToValue(MouseEvent event) {
+        return ((event.getSceneX() - 5 * scalingFactor) / (getWidth() - 10 * scalingFactor)) * 100;
+    }
+
+    private double valueToMousePosition(double value) {
+        return (getWidth() - 10 * scalingFactor) * value / 100;
+    }
+
     /**
      * Umrechnung eines Winkels, zwischen 0 und 360 Grad, in eine Prozentangabe.
-     *
+     * <p>
      * Diese Funktion ist sinnvoll nur fuer radiale Controls einsetzbar.
      *
      * @param angle der Winkel
      * @return die entsprechende Prozentangabe
      */
-    private double angleToPercentage(double angle){
+    private double angleToPercentage(double angle) {
         return angle / 360.0;
     }
 
     /**
      * Umrechnung einer Prozentangabe, zwischen 0 und 100, in den entsprechenden Winkel.
-     *
+     * <p>
      * Diese Funktion ist sinnvoll nur fuer radiale Controls einsetzbar.
      *
      * @param percentage die Prozentangabe
      * @return der entsprechende Winkel
      */
-    private double percentageToAngle(double percentage){
+    private double percentageToAngle(double percentage) {
         return 360.0 * percentage;
     }
 
@@ -328,17 +353,17 @@ public class SimpleControl extends Region {
      *
      * @param cx x-Position des Zentrums
      * @param cy y-Position des Zentrums
-     * @param x x-Position des Referenzpunkts
-     * @param y y-Position des Referenzpunkts
+     * @param x  x-Position des Referenzpunkts
+     * @param y  y-Position des Referenzpunkts
      * @return winkel zwischen 0 und 360 Grad
      */
     private double angle(double cx, double cy, double x, double y) {
         double deltaX = x - cx;
         double deltaY = y - cy;
         double radius = Math.sqrt((deltaX * deltaX) + (deltaY * deltaY));
-        double nx     = deltaX / radius;
-        double ny     = deltaY / radius;
-        double theta  = Math.toRadians(90) + Math.atan2(ny, nx);
+        double nx = deltaX / radius;
+        double ny = deltaY / radius;
+        double theta = Math.toRadians(90) + Math.atan2(ny, nx);
 
         return Double.compare(theta, 0.0) >= 0 ? Math.toDegrees(theta) : Math.toDegrees((theta)) + 360.0;
     }
@@ -346,15 +371,15 @@ public class SimpleControl extends Region {
     /**
      * Berechnet den Punkt auf einem Kreis mit gegebenen Radius im angegebenen Winkel
      *
-     * @param cX x-Position des Zentrums
-     * @param cY y-Position des Zentrums
+     * @param cX     x-Position des Zentrums
+     * @param cY     y-Position des Zentrums
      * @param radius Kreisradius
-     * @param angle Winkel zwischen 0 und 360 Grad
+     * @param angle  Winkel zwischen 0 und 360 Grad
      * @return Punkt auf dem Kreis
      */
     private Point2D pointOnCircle(double cX, double cY, double radius, double angle) {
         return new Point2D(cX - (radius * Math.sin(Math.toRadians(angle - 180))),
-                           cY + (radius * Math.cos(Math.toRadians(angle - 180))));
+                cY + (radius * Math.cos(Math.toRadians(angle - 180))));
     }
 
     /**
@@ -372,8 +397,8 @@ public class SimpleControl extends Region {
      * Erzeugt eine Text-Instanz mit dem angegebenen Zentrum.
      * Der Text bleibt zentriert auch wenn der angezeigte Text sich aendert.
      *
-     * @param cx x-Position des Zentrumspunkt des Textes
-     * @param cy y-Position des Zentrumspunkt des Textes
+     * @param cx         x-Position des Zentrumspunkt des Textes
+     * @param cy         y-Position des Zentrumspunkt des Textes
      * @param styleClass mit dieser StyleClass kann der erzeugte Text via css gestyled werden
      * @return Text
      */
@@ -393,31 +418,32 @@ public class SimpleControl extends Region {
 
     /**
      * Erzeugt eine Group von Lines, die zum Beispiel fuer Skalen oder Zifferblaetter verwendet werden koennen.
-     *
+     * <p>
      * Diese Funktion ist sinnvoll nur fuer radiale Controls einsetzbar.
-     * @param cx x-Position des Zentrumspunkts
-     * @param cy y-Position des Zentrumspunkts
-     * @param radius radius auf dem die Anfangspunkte der Ticks liegen
+     *
+     * @param cx            x-Position des Zentrumspunkts
+     * @param cy            y-Position des Zentrumspunkts
+     * @param radius        radius auf dem die Anfangspunkte der Ticks liegen
      * @param numberOfTicks gewuenschte Anzahl von Ticks
      * @param startingAngle Wickel in dem der erste Tick liegt, zwischen 0 und 360 Grad
-     * @param overallAngle gewuenschter Winkel zwischen den erzeugten Ticks, zwischen 0 und 360 Grad
-     * @param tickLength Laenge eines Ticks
-     * @param styleClass Name der StyleClass mit der ein einzelner Tick via css gestyled werden kann
+     * @param overallAngle  gewuenschter Winkel zwischen den erzeugten Ticks, zwischen 0 und 360 Grad
+     * @param tickLength    Laenge eines Ticks
+     * @param styleClass    Name der StyleClass mit der ein einzelner Tick via css gestyled werden kann
      * @return Group mit allen Ticks
      */
-    private Group createTicks(double cx, double cy, double radius, int numberOfTicks, double startingAngle, double overallAngle,  double tickLength, String styleClass) {
+    private Group createTicks(double cx, double cy, double radius, int numberOfTicks, double startingAngle, double overallAngle, double tickLength, String styleClass) {
         Group group = new Group();
 
         double degreesBetweenTicks = overallAngle == 360 ?
-                                     overallAngle / numberOfTicks :
-                                     overallAngle /(numberOfTicks - 1);
-        double innerRadius         = radius - tickLength;
+                overallAngle / numberOfTicks :
+                overallAngle / (numberOfTicks - 1);
+        double innerRadius = radius - tickLength;
 
         for (int i = 0; i < numberOfTicks; i++) {
             double angle = startingAngle + i * degreesBetweenTicks;
 
-            Point2D startPoint = pointOnCircle(cx, cy, radius,      angle);
-            Point2D endPoint   = pointOnCircle(cx, cy, innerRadius, angle);
+            Point2D startPoint = pointOnCircle(cx, cy, radius, angle);
+            Point2D endPoint = pointOnCircle(cx, cy, innerRadius, angle);
 
             Line tick = new Line(startPoint.getX(), startPoint.getY(), endPoint.getX(), endPoint.getY());
             tick.getStyleClass().add(styleClass);
@@ -428,15 +454,15 @@ public class SimpleControl extends Region {
     }
 
     private String colorToCss(final Color color) {
-  		return color.toString().replace("0x", "#");
-  	}
+        return color.toString().replace("0x", "#");
+    }
 
 
     // compute sizes
 
     @Override
     protected double computeMinWidth(double height) {
-        Insets padding           = getPadding();
+        Insets padding = getPadding();
         double horizontalPadding = padding.getLeft() + padding.getRight();
 
         return MINIMUM_WIDTH + horizontalPadding;
@@ -444,7 +470,7 @@ public class SimpleControl extends Region {
 
     @Override
     protected double computeMinHeight(double width) {
-        Insets padding         = getPadding();
+        Insets padding = getPadding();
         double verticalPadding = padding.getTop() + padding.getBottom();
 
         return MINIMUM_HEIGHT + verticalPadding;
@@ -452,7 +478,7 @@ public class SimpleControl extends Region {
 
     @Override
     protected double computePrefWidth(double height) {
-        Insets padding           = getPadding();
+        Insets padding = getPadding();
         double horizontalPadding = padding.getLeft() + padding.getRight();
 
         return ARTBOARD_WIDTH + horizontalPadding;
@@ -460,7 +486,7 @@ public class SimpleControl extends Region {
 
     @Override
     protected double computePrefHeight(double width) {
-        Insets padding         = getPadding();
+        Insets padding = getPadding();
         double verticalPadding = padding.getTop() + padding.getBottom();
 
         return ARTBOARD_HEIGHT + verticalPadding;
