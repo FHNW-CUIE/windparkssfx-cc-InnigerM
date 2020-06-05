@@ -1,11 +1,10 @@
-package cuie.holy_guacamole.template_simplecontrol;
+package cuie.holy_guacamole.double_slider_control;
 
 import javafx.beans.property.*;
 import javafx.geometry.Insets;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
-import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 import javafx.scene.text.Font;
@@ -29,7 +28,7 @@ public class DoubleSliderControl extends Region {
     private static final double MINIMUM_HEIGHT = MINIMUM_WIDTH / ASPECT_RATIO;
 
     private static final int MIN_VALUE = 1990;
-    private static final int MAX_VALUE = 2030;
+    private static final int MAX_VALUE = 2039;
 
     private static double width;
 
@@ -64,11 +63,11 @@ public class DoubleSliderControl extends Region {
     private void initializeParts() {
         leftThumb = new Circle(MARGIN, MARGIN, MARGIN / 2);
         leftThumb.getStyleClass().add("left-thumb");
-        setMinValue(MIN_VALUE);
+        setMinValue(2000);
 
         rightThumb = new Circle(ARTBOARD_WIDTH - MARGIN, MARGIN, MARGIN / 2);
         rightThumb.getStyleClass().add("right-thumb");
-        setMaxValue(MAX_VALUE);
+        setMaxValue(2030);
 
         line = new Line(MARGIN, MARGIN, ARTBOARD_WIDTH - MARGIN, MARGIN);
     }

@@ -1,4 +1,4 @@
-package cuie.holy_guacamole.template_simplecontrol.demo;
+package cuie.holy_guacamole.double_slider_control.demo;
 
 import javafx.application.Application;
 import javafx.scene.Scene;

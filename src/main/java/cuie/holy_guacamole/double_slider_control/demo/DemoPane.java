@@ -1,11 +1,11 @@
-package cuie.holy_guacamole.template_simplecontrol.demo;
+package cuie.holy_guacamole.double_slider_control.demo;
 
 import javafx.geometry.Insets;
 import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 
-import cuie.holy_guacamole.template_simplecontrol.DoubleSliderControl;
+import cuie.holy_guacamole.double_slider_control.DoubleSliderControl;
 
 public class DemoPane extends BorderPane {
 
