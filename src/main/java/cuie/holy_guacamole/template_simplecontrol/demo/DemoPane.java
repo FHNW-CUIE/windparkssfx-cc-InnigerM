@@ -17,8 +17,8 @@ public class DemoPane extends BorderPane {
     private SimpleControl cc;
 
     // all controls
-    private Slider slider;
-    private Label value;
+    private Label minValue;
+    private Label maxValue;
     private ColorPicker colorPicker;
 
     public DemoPane(PresentationModel pm) {
@@ -33,17 +33,16 @@ public class DemoPane extends BorderPane {
 
         cc = new SimpleControl();
 
-        slider = new Slider();
-        slider.setShowTickLabels(true);
+        minValue = new Label();
 
-        value = new Label();
+        maxValue = new Label();
 
         colorPicker = new ColorPicker();
     }
 
     private void layoutControls() {
         VBox controlPane = new VBox(new Label("SimpleControl Properties"),
-                slider, value, colorPicker);
+                minValue, maxValue, colorPicker);
         controlPane.setPadding(new Insets(0, 50, 0, 50));
         controlPane.setSpacing(10);
 
@@ -52,12 +51,12 @@ public class DemoPane extends BorderPane {
     }
 
     private void setupBindings() {
-        slider.valueProperty().bindBidirectional(pm.pmValueProperty());
-        value.textProperty().bind(pm.pmValueProperty().asString());
+        minValue.textProperty().bind(pm.pmMinValueProperty().asString());
+        maxValue.textProperty().bind(pm.pmMaxValueProperty().asString());
         colorPicker.valueProperty().bindBidirectional(pm.baseColorProperty());
 
-
-        cc.minValueProperty().bindBidirectional(pm.pmValueProperty());
+        cc.minValueProperty().bindBidirectional(pm.pmMinValueProperty());
+        cc.maxValueProperty().bindBidirectional(pm.pmMaxValueProperty());
         cc.baseColorProperty().bindBidirectional(pm.baseColorProperty());
     }
 
