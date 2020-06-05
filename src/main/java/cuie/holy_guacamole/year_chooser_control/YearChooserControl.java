@@ -1,4 +1,4 @@
-package cuie.holy_guacamole.template_businesscontrol;
+package cuie.holy_guacamole.year_chooser_control;
 
 import java.util.regex.Pattern;
 
@@ -14,7 +14,7 @@ import javafx.scene.control.Skin;
 import javafx.scene.text.Font;
 
 //todo: umbenennen
-public class BusinessControl extends Control {
+public class YearChooserControl extends Control {
     private static final PseudoClass MANDATORY_CLASS = PseudoClass.getPseudoClass("mandatory");
     private static final PseudoClass STARTING_INVALID_CLASS = PseudoClass.getPseudoClass("starting-invalid");
     private static final PseudoClass FINISHING_INVALID_CLASS = PseudoClass.getPseudoClass("finishing-invalid");
@@ -84,14 +84,14 @@ public class BusinessControl extends Control {
     private final StringProperty finishingErrorMessage = new SimpleStringProperty();
 
 
-    public BusinessControl() {
+    public YearChooserControl() {
         initializeSelf();
         addValueChangeListener();
     }
 
     @Override
     protected Skin<?> createDefaultSkin() {
-        return new BusinessSkin(this);
+        return new YearChooserSkin(this);
     }
 
     public void resetStarting() {

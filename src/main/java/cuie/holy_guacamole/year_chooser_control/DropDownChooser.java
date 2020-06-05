@@ -1,19 +1,18 @@
-package cuie.holy_guacamole.template_businesscontrol;
+package cuie.holy_guacamole.year_chooser_control;
 
 import cuie.holy_guacamole.double_slider_control.DoubleSliderControl;
-import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
 
 
 class DropDownChooser extends VBox {
     private static final String STYLE_CSS = "dropDownChooser.css";
 
-    private final BusinessControl businessControl;
+    private final YearChooserControl yearChooserControl;
 
     private DoubleSliderControl sliderControl;
 
-    DropDownChooser(BusinessControl businessControl) {
-        this.businessControl = businessControl;
+    DropDownChooser(YearChooserControl yearChooserControl) {
+        this.yearChooserControl = yearChooserControl;
         initializeSelf();
         initializeParts();
         layoutParts();
@@ -36,7 +35,7 @@ class DropDownChooser extends VBox {
     }
 
     private void setupBindings() {
-        businessControl.startingValueProperty().bindBidirectional(sliderControl.minValueProperty());
-        businessControl.finishingValueProperty().bindBidirectional(sliderControl.maxValueProperty());
+        yearChooserControl.startingValueProperty().bindBidirectional(sliderControl.minValueProperty());
+        yearChooserControl.finishingValueProperty().bindBidirectional(sliderControl.maxValueProperty());
     }
 }

@@ -1,4 +1,4 @@
-package cuie.holy_guacamole.template_businesscontrol.demo;
+package cuie.holy_guacamole.year_chooser_control.demo;
 
 import javafx.geometry.Insets;
 import javafx.scene.control.CheckBox;
@@ -8,10 +8,10 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 
-import cuie.holy_guacamole.template_businesscontrol.BusinessControl;
+import cuie.holy_guacamole.year_chooser_control.YearChooserControl;
 
 class DemoPane extends BorderPane {
-    private BusinessControl businessControl;
+    private YearChooserControl yearChooserControl;
 
     private Slider startingYearSlider;
     private Slider finishingYearSlider;
@@ -34,7 +34,7 @@ class DemoPane extends BorderPane {
     private void initializeControls() {
         setPadding(new Insets(10));
 
-        businessControl = new BusinessControl();
+        yearChooserControl = new YearChooserControl();
 
         startingYearSlider = new Slider(1990, 2039, 0);
         finishingYearSlider = new Slider(1990, 2039, 0);
@@ -49,7 +49,7 @@ class DemoPane extends BorderPane {
     }
 
     private void layoutControls() {
-        setCenter(businessControl);
+        setCenter(yearChooserControl);
         VBox box = new VBox(10,
                 new Label("Business Control Properties"),
                 new Label("Starting Year"), startingYearSlider,
@@ -72,11 +72,11 @@ class DemoPane extends BorderPane {
         readOnlyBox.selectedProperty().bindBidirectional(model.startingYearReadOnlyProperty());
         mandatoryBox.selectedProperty().bindBidirectional(model.startingYearMandatoryProperty());
 
-        businessControl.startingValueProperty().bindBidirectional(model.startingYearProperty());
-        businessControl.finishingValueProperty().bindBidirectional(model.finishingYearProperty());
-        businessControl.startingLabelProperty().bind(model.startingYearLabelProperty());
-        businessControl.readOnlyProperty().bind(model.startingYearReadOnlyProperty());
-        businessControl.mandatoryProperty().bind(model.startingYearMandatoryProperty());
+        yearChooserControl.startingValueProperty().bindBidirectional(model.startingYearProperty());
+        yearChooserControl.finishingValueProperty().bindBidirectional(model.finishingYearProperty());
+        yearChooserControl.startingLabelProperty().bind(model.startingYearLabelProperty());
+        yearChooserControl.readOnlyProperty().bind(model.startingYearReadOnlyProperty());
+        yearChooserControl.mandatoryProperty().bind(model.startingYearMandatoryProperty());
     }
 
 }

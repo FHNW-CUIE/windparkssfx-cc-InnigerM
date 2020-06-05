@@ -1,4 +1,4 @@
-package cuie.holy_guacamole.template_businesscontrol;
+package cuie.holy_guacamole.year_chooser_control;
 
 import java.util.Arrays;
 
@@ -19,13 +19,11 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
-import javafx.scene.text.Font;
 import javafx.stage.Popup;
 import javafx.util.Duration;
 
 //todo: durch eigenen Skin ersetzen
-class BusinessSkin extends SkinBase<BusinessControl> {
+class YearChooserSkin extends SkinBase<YearChooserControl> {
     private static final int IMG_SIZE = 12;
     private static final int IMG_OFFSET = 4;
     private static final int PREF_WIDTH = 390;
@@ -43,7 +41,7 @@ class BusinessSkin extends SkinBase<BusinessControl> {
 
         StartingState(final String text, final String file) {
             this.text = text;
-            String url = BusinessSkin.class.getResource("/icons/" + file).toExternalForm();
+            String url = YearChooserSkin.class.getResource("/icons/" + file).toExternalForm();
             this.imageView = new ImageView(new Image(url,
                     IMG_SIZE, IMG_SIZE,
                     true, false));
@@ -60,7 +58,7 @@ class BusinessSkin extends SkinBase<BusinessControl> {
 
         FinishingState(final String text, final String file) {
             this.text = text;
-            String url = BusinessSkin.class.getResource("/icons/" + file).toExternalForm();
+            String url = YearChooserSkin.class.getResource("/icons/" + file).toExternalForm();
             this.imageView = new ImageView(new Image(url,
                     IMG_SIZE, IMG_SIZE,
                     true, false));
@@ -89,7 +87,7 @@ class BusinessSkin extends SkinBase<BusinessControl> {
     private Animation invalidFinishingInputAnimation;
     private FadeTransition fadeOutValidFinishingIconAnimation;
 
-    BusinessSkin(BusinessControl control) {
+    YearChooserSkin(YearChooserControl control) {
         super(control);
         initializeSelf();
         initializeParts();
@@ -312,10 +310,10 @@ class BusinessSkin extends SkinBase<BusinessControl> {
     }
 
     private void setupBindings() {
-        startingReadOnlyYear.textProperty().bind(getSkinnable().startingValueProperty().asString(BusinessControl.FORMATTED_INTEGER_PATTERN));
+        startingReadOnlyYear.textProperty().bind(getSkinnable().startingValueProperty().asString(YearChooserControl.FORMATTED_INTEGER_PATTERN));
         startingYear.textProperty().bindBidirectional(getSkinnable().startingUserFacingTextProperty());
 
-        finishingReadOnlyYear.textProperty().bind(getSkinnable().finishingValueProperty().asString(BusinessControl.FORMATTED_INTEGER_PATTERN));
+        finishingReadOnlyYear.textProperty().bind(getSkinnable().finishingValueProperty().asString(YearChooserControl.FORMATTED_INTEGER_PATTERN));
         finishingYear.textProperty().bindBidirectional(getSkinnable().finishingUserFacingTextProperty());
 
         startingYear.promptTextProperty().bind(getSkinnable().startingLabelProperty());

@@ -1,4 +1,4 @@
-package cuie.holy_guacamole.template_businesscontrol.demo;
+package cuie.holy_guacamole.year_chooser_control.demo;
 
 import javafx.application.Application;
 import javafx.scene.Scene;
