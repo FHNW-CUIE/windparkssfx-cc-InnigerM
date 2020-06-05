@@ -4,12 +4,7 @@ import java.util.List;
 import java.util.Locale;
 
 import javafx.animation.AnimationTimer;
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleDoubleProperty;
-import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.*;
 import javafx.css.CssMetaData;
 import javafx.css.SimpleStyleableObjectProperty;
 import javafx.css.Styleable;
@@ -18,7 +13,6 @@ import javafx.css.StyleablePropertyFactory;
 import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
 import javafx.geometry.VPos;
-import javafx.scene.Group;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
@@ -70,7 +64,8 @@ public class SimpleControl extends Region {
     private Line display;
 
     // ToDo: ersetzen durch alle notwendigen Properties der CustomControl
-    private final DoubleProperty value = new SimpleDoubleProperty();
+    private final IntegerProperty minValue = new SimpleIntegerProperty();
+    private final IntegerProperty maxValue = new SimpleIntegerProperty();
 
     // ToDo: ergänzen mit allen CSS stylable properties
     private static final CssMetaData<SimpleControl, Color> BASE_COLOR_META_DATA = FACTORY.createColorCssMetaData("-base-color", s -> s.baseColor);
@@ -86,18 +81,6 @@ public class SimpleControl extends Region {
     // ToDo: Loeschen falls keine getaktete Animation benoetigt wird
     private final BooleanProperty blinking = new SimpleBooleanProperty(false);
     private final ObjectProperty<Duration> pulse = new SimpleObjectProperty<>(Duration.seconds(1.0));
-
-    private final AnimationTimer timer = new AnimationTimer() {
-        private long lastTimerCall;
-
-        @Override
-        public void handle(long now) {
-            if (now > lastTimerCall + (getPulse().toMillis() * 1_000_000L)) {
-                performPeriodicTask();
-                lastTimerCall = now;
-            }
-        }
-    };
 
     // ToDo: alle Animationen und Timelines deklarieren
 
@@ -160,17 +143,19 @@ public class SimpleControl extends Region {
     private void setupEventHandlers() {
         //ToDo: bei Bedarf ergänzen
         leftThumb.setOnMouseDragged(event -> {
-            double newValue = mousePositionToValue(event);
-            setValue(newValue);
+            int newValue = (int) mousePositionToValue(event);
+            setMinValue(newValue);
+        });
+
+        rightThumb.setOnMouseDragged(event -> {
+            int newValue = (int) mousePositionToValue(event);
+            setMaxValue(newValue);
         });
     }
 
     private void setupValueChangeListeners() {
-        //ToDo: durch die Listener auf die Properties des Custom Controls ersetzen
-        valueProperty().addListener((observable, oldValue, newValue) -> updateUI());
-
-        // fuer die getaktete Animation
-        blinking.addListener((observable, oldValue, newValue) -> startClockedAnimation(newValue));
+        minValueProperty().addListener((observable, oldValue, newValue) -> updateUI());
+        maxValueProperty().addListener((observable, oldValue, newValue) -> updateUI());
     }
 
     private void setupBindings() {
@@ -178,23 +163,15 @@ public class SimpleControl extends Region {
     }
 
     private void updateUI() {
-        //ToDo : ergaenzen mit dem was bei einer Wertaenderung einer Status-Property im UI upgedated werden muss
-        double position = valueToMousePosition(getValue());
-        if(position > MARGIN && position < width - MARGIN) {
-            leftThumb.setCenterX(position);
-        }
-    }
-
-    private void performPeriodicTask() {
-        //ToDo: ergaenzen mit dem was bei der getakteten Animation gemacht werden muss
-        //normalerweise: den Wert einer der Status-Properties aendern
-    }
-
-    private void startClockedAnimation(boolean start) {
-        if (start) {
-            timer.start();
-        } else {
-            timer.stop();
+        double leftPosition = valueToThumbPosition(getMinValue());
+        double rightPosition = valueToThumbPosition(getMaxValue());
+        if(leftPosition < rightPosition) {
+            if (leftPosition > MARGIN && leftPosition < width - MARGIN) {
+                leftThumb.setCenterX(leftPosition);
+            }
+            if (rightPosition > MARGIN && rightPosition < width - MARGIN) {
+                rightThumb.setCenterX(rightPosition);
+            }
         }
     }
 
@@ -318,11 +295,12 @@ public class SimpleControl extends Region {
     }
 
     private double mousePositionToValue(MouseEvent event) {
-        return ((event.getSceneX() - MARGIN / 2) / (getWidth() - MARGIN * 2)) * 100;
+        return ((event.getSceneX() - MARGIN) / (getWidth() - MARGIN * 2)) * 100;
     }
 
-    private double valueToMousePosition(double value) {
-        return (getWidth() - MARGIN * 2) * value / 100;
+    private double valueToThumbPosition(double value) {
+        double percentage = valueToPercentage(value, 0, 100);
+        return (getWidth() - MARGIN * 2) * percentage + MARGIN /2;
     }
 
     /**
@@ -417,43 +395,6 @@ public class SimpleControl extends Region {
         return text;
     }
 
-    /**
-     * Erzeugt eine Group von Lines, die zum Beispiel fuer Skalen oder Zifferblaetter verwendet werden koennen.
-     * <p>
-     * Diese Funktion ist sinnvoll nur fuer radiale Controls einsetzbar.
-     *
-     * @param cx            x-Position des Zentrumspunkts
-     * @param cy            y-Position des Zentrumspunkts
-     * @param radius        radius auf dem die Anfangspunkte der Ticks liegen
-     * @param numberOfTicks gewuenschte Anzahl von Ticks
-     * @param startingAngle Wickel in dem der erste Tick liegt, zwischen 0 und 360 Grad
-     * @param overallAngle  gewuenschter Winkel zwischen den erzeugten Ticks, zwischen 0 und 360 Grad
-     * @param tickLength    Laenge eines Ticks
-     * @param styleClass    Name der StyleClass mit der ein einzelner Tick via css gestyled werden kann
-     * @return Group mit allen Ticks
-     */
-    private Group createTicks(double cx, double cy, double radius, int numberOfTicks, double startingAngle, double overallAngle, double tickLength, String styleClass) {
-        Group group = new Group();
-
-        double degreesBetweenTicks = overallAngle == 360 ?
-                overallAngle / numberOfTicks :
-                overallAngle / (numberOfTicks - 1);
-        double innerRadius = radius - tickLength;
-
-        for (int i = 0; i < numberOfTicks; i++) {
-            double angle = startingAngle + i * degreesBetweenTicks;
-
-            Point2D startPoint = pointOnCircle(cx, cy, radius, angle);
-            Point2D endPoint = pointOnCircle(cx, cy, innerRadius, angle);
-
-            Line tick = new Line(startPoint.getX(), startPoint.getY(), endPoint.getX(), endPoint.getY());
-            tick.getStyleClass().add(styleClass);
-            group.getChildren().add(tick);
-        }
-
-        return group;
-    }
-
     private String colorToCss(final Color color) {
         return color.toString().replace("0x", "#");
     }
@@ -496,16 +437,28 @@ public class SimpleControl extends Region {
     // alle getter und setter  (generiert via "Code -> Generate... -> Getter and Setter)
 
     // ToDo: ersetzen durch die Getter und Setter Ihres CustomControls
-    public double getValue() {
-        return value.get();
+    public int getMinValue() {
+        return minValue.get();
     }
 
-    public DoubleProperty valueProperty() {
-        return value;
+    public IntegerProperty minValueProperty() {
+        return minValue;
     }
 
-    public void setValue(double value) {
-        this.value.set(value);
+    public void setMinValue(int minValue) {
+        this.minValue.set(minValue);
+    }
+
+    public int getMaxValue() {
+        return maxValue.get();
+    }
+
+    public IntegerProperty maxValueProperty() {
+        return maxValue;
+    }
+
+    public void setMaxValue(int maxValue) {
+        this.maxValue.set(maxValue);
     }
 
     public Color getBaseColor() {

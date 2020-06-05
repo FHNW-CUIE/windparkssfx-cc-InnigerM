@@ -17,7 +17,8 @@ public class DemoPane extends BorderPane {
     private SimpleControl cc;
 
     // all controls
-    private Slider      slider;
+    private Slider slider;
+    private Label value;
     private ColorPicker colorPicker;
 
     public DemoPane(PresentationModel pm) {
@@ -35,12 +36,14 @@ public class DemoPane extends BorderPane {
         slider = new Slider();
         slider.setShowTickLabels(true);
 
+        value = new Label();
+
         colorPicker = new ColorPicker();
     }
 
     private void layoutControls() {
         VBox controlPane = new VBox(new Label("SimpleControl Properties"),
-                                    slider, colorPicker);
+                slider, value, colorPicker);
         controlPane.setPadding(new Insets(0, 50, 0, 50));
         controlPane.setSpacing(10);
 
@@ -50,10 +53,11 @@ public class DemoPane extends BorderPane {
 
     private void setupBindings() {
         slider.valueProperty().bindBidirectional(pm.pmValueProperty());
+        value.textProperty().bind(pm.pmValueProperty().asString());
         colorPicker.valueProperty().bindBidirectional(pm.baseColorProperty());
 
 
-        cc.valueProperty().bindBidirectional(pm.pmValueProperty());
+        cc.minValueProperty().bindBidirectional(pm.pmValueProperty());
         cc.baseColorProperty().bindBidirectional(pm.baseColorProperty());
     }
 
