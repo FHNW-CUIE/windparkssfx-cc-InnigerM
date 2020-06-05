@@ -1,17 +1,7 @@
 package cuie.holy_guacamole.template_simplecontrol;
 
-import java.util.List;
-import java.util.Locale;
-
 import javafx.beans.property.*;
-import javafx.css.CssMetaData;
-import javafx.css.SimpleStyleableObjectProperty;
-import javafx.css.Styleable;
-import javafx.css.StyleableObjectProperty;
-import javafx.css.StyleablePropertyFactory;
 import javafx.geometry.Insets;
-import javafx.geometry.Point2D;
-import javafx.geometry.VPos;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
@@ -19,34 +9,19 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 import javafx.scene.text.Font;
-import javafx.scene.text.Text;
-import javafx.scene.text.TextAlignment;
-import javafx.scene.text.TextBoundsType;
-import javafx.util.Duration;
 
 /**
- * ToDo: CustomControl kurz beschreiben
  * <p>
- * ToDo: Autoren ergänzen / ersetzen
+ *     Double slider control for adjusting starting and finishing year of wind power supplies.
  *
  * @author
+ * Marco Inniger, Jan Sedelmeier
  */
-//ToDo: Umbenennen.
-public class SimpleControl extends Region {
-    // wird gebraucht fuer StyleableProperties
-    private static final StyleablePropertyFactory<SimpleControl> FACTORY = new StyleablePropertyFactory<>(Region.getClassCssMetaData());
-
-    @Override
-    public List<CssMetaData<? extends Styleable, ?>> getCssMetaData() {
-        return FACTORY.getCssMetaData();
-    }
-
-    private static final Locale CH = new Locale("de", "CH");
-
+public class DoubleSliderControl extends Region {
     private static final double MARGIN = 25;
 
-    private static final double ARTBOARD_WIDTH = 500;  // ToDo: Breite der "Zeichnung" aus dem Grafik-Tool übernehmen
-    private static final double ARTBOARD_HEIGHT = 100;  // ToDo: Anpassen an die Breite der Zeichnung
+    private static final double ARTBOARD_WIDTH = 500;
+    private static final double ARTBOARD_HEIGHT = 100;
 
     private static final double ASPECT_RATIO = ARTBOARD_WIDTH / ARTBOARD_HEIGHT;
 
@@ -67,40 +42,26 @@ public class SimpleControl extends Region {
     private final IntegerProperty minValue = new SimpleIntegerProperty();
     private final IntegerProperty maxValue = new SimpleIntegerProperty();
 
-    // ToDo: ergänzen mit allen CSS stylable properties
-    private static final CssMetaData<SimpleControl, Color> BASE_COLOR_META_DATA = FACTORY.createColorCssMetaData("-base-color", s -> s.baseColor);
-
-    private final StyleableObjectProperty<Color> baseColor = new SimpleStyleableObjectProperty<Color>(BASE_COLOR_META_DATA) {
-        @Override
-        protected void invalidated() {
-            setStyle(String.format("%s: %s;", getCssMetaData().getProperty(), colorToCss(get())));
-            applyCss();
-        }
-    };
-
     // fuer Resizing benoetigt
     private Pane drawingPane;
 
-    public SimpleControl() {
+    public DoubleSliderControl() {
         initializeSelf();
         initializeParts();
         initializeDrawingPane();
         layoutParts();
         setupEventHandlers();
         setupValueChangeListeners();
-        setupBindings();
     }
 
     private void initializeSelf() {
         loadFonts("/fonts/Lato/Lato-Lig.ttf", "/fonts/Lato/Lato-Reg.ttf");
         addStylesheetFiles("style.css");
 
-        getStyleClass().add("simple-control");  // ToDo: an den Namen der Klasse (des CustomControls) anpassen
+        getStyleClass().add("double-slider-control");
     }
 
     private void initializeParts() {
-        double center = ARTBOARD_WIDTH * 0.5;
-
         leftThumb = new Circle(MARGIN, MARGIN, MARGIN / 2);
         leftThumb.getStyleClass().add("left-thumb");
         setMinValue(MIN_VALUE);
@@ -147,10 +108,6 @@ public class SimpleControl extends Region {
         maxValueProperty().addListener((observable, oldValue, newValue) -> updateUI());
     }
 
-    private void setupBindings() {
-        //ToDo: dieses Binding ersetzen
-    }
-
     private void updateUI() {
         double leftPosition = valueToThumbPosition(getMinValue());
         double rightPosition = valueToThumbPosition(getMaxValue());
@@ -170,7 +127,6 @@ public class SimpleControl extends Region {
         resize();
     }
 
-    //ToDo: ueberpruefen ob dieser Resizing-Ansatz anwendbar ist.
     private void resize() {
         Insets padding = getPadding();
         double availableWidth = getWidth() - padding.getLeft() - padding.getRight();
@@ -179,7 +135,6 @@ public class SimpleControl extends Region {
         width = availableWidth;
 
         if (availableWidth > 0 && availableHeight > 0) {
-            //ToDo: ueberpruefen ob die drawingPane immer zentriert werden soll (eventuell ist zum Beispiel linksbuendig angemessener)
             leftThumb.setCenterX(valueToThumbPosition(getMinValue()));
             rightThumb.setCenterX(valueToThumbPosition(getMaxValue()));
             line.setStartX(MARGIN);
@@ -188,29 +143,6 @@ public class SimpleControl extends Region {
             line.setEndY(MARGIN);
         }
     }
-
-    private void relocateDrawingPaneCentered() {
-        drawingPane.relocate((getWidth() - ARTBOARD_WIDTH) * 0.5, (getHeight() - ARTBOARD_HEIGHT) * 0.5);
-    }
-
-    private void relocateDrawingPaneCenterBottom(double scaleY, double paddingBottom) {
-        double visualHeight = ARTBOARD_HEIGHT * scaleY;
-        double visualSpace = getHeight() - visualHeight;
-        double y = visualSpace + (visualHeight - ARTBOARD_HEIGHT) * 0.5 - paddingBottom;
-
-        drawingPane.relocate((getWidth() - ARTBOARD_WIDTH) * 0.5, y);
-    }
-
-    private void relocateDrawingPaneCenterTop(double scaleY, double paddingTop) {
-        double visualHeight = ARTBOARD_HEIGHT * scaleY;
-        double y = (visualHeight - ARTBOARD_HEIGHT) * 0.5 + paddingTop;
-
-        drawingPane.relocate((getWidth() - ARTBOARD_WIDTH) * 0.5, y);
-    }
-
-    // Sammlung nuetzlicher Funktionen
-
-    //ToDo: diese Funktionen anschauen und für die Umsetzung des CustomControls benutzen
 
     private void loadFonts(String... font) {
         for (String f : font) {
@@ -259,13 +191,7 @@ public class SimpleControl extends Region {
         return (getWidth() - MARGIN * 2) * percentage + MARGIN / 2;
     }
 
-    private String colorToCss(final Color color) {
-        return color.toString().replace("0x", "#");
-    }
-
-
     // compute sizes
-
     @Override
     protected double computeMinWidth(double height) {
         Insets padding = getPadding();
@@ -300,7 +226,6 @@ public class SimpleControl extends Region {
 
     // alle getter und setter  (generiert via "Code -> Generate... -> Getter and Setter)
 
-    // ToDo: ersetzen durch die Getter und Setter Ihres CustomControls
     public int getMinValue() {
         return minValue.get();
     }
@@ -323,17 +248,5 @@ public class SimpleControl extends Region {
 
     public void setMaxValue(int maxValue) {
         this.maxValue.set(maxValue);
-    }
-
-    public Color getBaseColor() {
-        return baseColor.get();
-    }
-
-    public StyleableObjectProperty<Color> baseColorProperty() {
-        return baseColor;
-    }
-
-    public void setBaseColor(Color baseColor) {
-        this.baseColor.set(baseColor);
     }
 }

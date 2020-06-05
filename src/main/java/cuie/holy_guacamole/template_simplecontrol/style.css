@@ -1,19 +1,18 @@
-.simple-control {
-    -fx-padding:          5;
+.double-slider-control {
+    -fx-padding: 5;
     -fx-background-color: white;
-    -base-color:          rgb(2, 138, 204);
 }
 
-.simple-control .left-thumb {
-    -fx-fill: -base-color;
+.double-slider-control .left-thumb {
+    -fx-fill: orangered;
 }
 
-.simple-control .right-thumb {
-    -fx-fill: -base-color;
+.double-slider-control .right-thumb {
+    -fx-fill: orangered;
 }
 
-.simple-control .display {
+.double-slider-control .display {
     -fx-font-family: 'Lato Light';
-    -fx-font-size:   24;
-    -fx-fill:        derive(-base-color, 90%);
+    -fx-font-size: 24;
+    -fx-fill: darkgray;
 }

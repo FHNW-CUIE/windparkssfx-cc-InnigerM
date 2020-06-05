@@ -9,7 +9,6 @@ import javafx.scene.paint.Color;
 public class PresentationModel {
     private final DoubleProperty pmMinValue = new SimpleDoubleProperty(2000);
     private final DoubleProperty pmMaxValue = new SimpleDoubleProperty(2020);
-    private final ObjectProperty<Color> baseColor = new SimpleObjectProperty<>();
 
     public double getPmMinValue() {
         return pmMinValue.get();
@@ -33,17 +32,5 @@ public class PresentationModel {
 
     public void setPmMaxValue(double pmMaxValue) {
         this.pmMaxValue.set(pmMaxValue);
-    }
-
-    public Color getBaseColor() {
-        return baseColor.get();
-    }
-
-    public ObjectProperty<Color> baseColorProperty() {
-        return baseColor;
-    }
-
-    public void setBaseColor(Color baseColor) {
-        this.baseColor.set(baseColor);
     }
 }
