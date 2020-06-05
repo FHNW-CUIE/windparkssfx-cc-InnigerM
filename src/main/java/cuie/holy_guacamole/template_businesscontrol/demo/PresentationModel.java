@@ -8,12 +8,12 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
 public class PresentationModel {
-    private final IntegerProperty startingYear = new SimpleIntegerProperty(2008);
+    private final IntegerProperty startingYear = new SimpleIntegerProperty(2000);
     private final StringProperty startingYearLabel = new SimpleStringProperty("Starting Year");
     private final BooleanProperty startingYearReadOnly = new SimpleBooleanProperty(false);
     private final BooleanProperty startingYearMandatory = new SimpleBooleanProperty(true);
 
-    private final IntegerProperty finishingYear = new SimpleIntegerProperty(2012);
+    private final IntegerProperty finishingYear = new SimpleIntegerProperty(2020);
     private final StringProperty finishingYearLabel = new SimpleStringProperty("Finishing Year");
     private final BooleanProperty finishingYearReadOnly = new SimpleBooleanProperty(false);
     private final BooleanProperty finishingYearMandatory = new SimpleBooleanProperty(true);

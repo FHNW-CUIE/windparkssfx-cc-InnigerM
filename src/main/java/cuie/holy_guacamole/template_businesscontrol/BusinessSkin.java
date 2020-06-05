@@ -16,6 +16,7 @@ import javafx.scene.control.SkinBase;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
@@ -27,6 +28,7 @@ import javafx.util.Duration;
 class BusinessSkin extends SkinBase<BusinessControl> {
     private static final int IMG_SIZE = 12;
     private static final int IMG_OFFSET = 4;
+    private static final int PREF_WIDTH = 390;
 
     private static final String ANGLE_DOWN = "\uf107";
     private static final String ANGLE_UP = "\uf106";
@@ -79,7 +81,7 @@ class BusinessSkin extends SkinBase<BusinessControl> {
 
     private StackPane startingPane;
     private StackPane finishingPane;
-    private VBox drawingPane;
+    private HBox drawingPane;
 
     private Animation invalidStartingInputAnimation;
     private FadeTransition fadeOutValidStartingIconAnimation;
@@ -137,7 +139,7 @@ class BusinessSkin extends SkinBase<BusinessControl> {
         finishingPane = new StackPane();
         finishingPane.getStyleClass().add("finishing-pane");
 
-        drawingPane = new VBox();
+        drawingPane = new HBox();
         drawingPane.getStyleClass().add("drawing-pane");
     }
 
@@ -214,18 +216,31 @@ class BusinessSkin extends SkinBase<BusinessControl> {
             if (popup.isShowing()) {
                 popup.hide();
             } else {
-                popup.show(startingYear.getScene().getWindow());
+                popup.show(drawingPane.getScene().getWindow());
             }
         });
 
-        popup.setOnHidden(event -> startingChooserButton.setText(ANGLE_DOWN));
+        finishingChooserButton.setOnAction(event -> {
+            if (popup.isShowing()) {
+                popup.hide();
+            } else {
+                popup.show(drawingPane.getScene().getWindow());
+            }
+        });
+
+        popup.setOnHidden(event -> {
+            startingChooserButton.setText(ANGLE_DOWN);
+            finishingChooserButton.setText(ANGLE_DOWN);
+        });
 
         popup.setOnShown(event -> {
             startingChooserButton.setText(ANGLE_UP);
-            Point2D location = startingYear.localToScreen(startingYear.getWidth() - dropDownChooser.getPrefWidth() - 3,
+            finishingChooserButton.setText(ANGLE_UP);
+            dropDownChooser.setPrefWidth(PREF_WIDTH);
+            Point2D location = startingYear.localToScreen(drawingPane.getWidth() - dropDownChooser.getPrefWidth() - 3,
                     startingYear.getHeight() - 3);
 
-            popup.setX(location.getX());
+            popup.setX(location.getX() - 20);
             popup.setY(location.getY());
         });
 
@@ -362,11 +377,5 @@ class BusinessSkin extends SkinBase<BusinessControl> {
             invalidFinishingInputAnimation.stop();
         }
         invalidFinishingInputAnimation.play();
-    }
-
-    private void loadFonts(String... font) {
-        for (String f : font) {
-            Font.loadFont(getClass().getResourceAsStream(f), 0);
-        }
     }
 }

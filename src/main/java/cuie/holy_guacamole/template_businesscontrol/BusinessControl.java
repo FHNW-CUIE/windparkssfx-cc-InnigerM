@@ -25,10 +25,13 @@ public class BusinessControl extends Control {
     //todo: durch die eigenen regulaeren Ausdruecke ersetzen
     static final String FORMATTED_INTEGER_PATTERN = "%d";
 
-    private static final String INTEGER_REGEX = "(19|20)[0-9]{2}";
+    private static final String INTEGER_REGEX = "(19|20)([01239])[0-9]";
     private static final String CONVERTING_REGEX = "[0-9]{2}";
     private static final Pattern INTEGER_PATTERN = Pattern.compile(INTEGER_REGEX);
     private static final Pattern CONVERTING_PATTERN = Pattern.compile(CONVERTING_REGEX);
+
+    private static final Integer STARTING_YEAR_MIN = 1990;
+    private static final Integer FINISHING_YEAR_MAX = 2039;
 
     //todo: Integer bei Bedarf ersetzen
     private final IntegerProperty startingValue = new SimpleIntegerProperty();
@@ -105,10 +108,12 @@ public class BusinessControl extends Control {
 
     public void completeStarting() {
         int year = getStartingValue() % 100;
-        if (year >= 50) {
+        if (year >= 90) {
             year += 1900;
-        } else {
+        } else if (year <= 30) {
             year += 2000;
+        } else {
+            year = 2000;
         }
         setStartingValue(year);
         setFinishingValue(year + 3);
@@ -128,10 +133,12 @@ public class BusinessControl extends Control {
 
     public void completeFinishing() {
         int year = getFinishingValue() % 100;
-        if (year >= 50) {
+        if (year >= 90) {
             year += 1900;
-        } else {
+        } else if (year <= 30) {
             year += 2000;
+        } else {
+            year = 2000;
         }
         setFinishingValue(year);
     }
@@ -163,7 +170,7 @@ public class BusinessControl extends Control {
                 setStartingErrorMessage("Not an Integer");
             }
 
-            if(finishingLowerStarting()) {
+            if (finishingLowerStarting()) {
                 setStartingInvalid(true);
                 setFinishingInvalid(true);
             } else {
@@ -193,7 +200,7 @@ public class BusinessControl extends Control {
                 setFinishingErrorMessage("Not an Integer");
             }
 
-            if(finishingLowerStarting()) {
+            if (finishingLowerStarting()) {
                 setStartingInvalid(true);
                 setFinishingInvalid(true);
             } else {

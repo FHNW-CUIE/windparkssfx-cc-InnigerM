@@ -1,5 +1,6 @@
 package cuie.holy_guacamole.template_businesscontrol;
 
+import cuie.holy_guacamole.double_slider_control.DoubleSliderControl;
 import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
 
@@ -9,7 +10,7 @@ class DropDownChooser extends VBox {
 
     private final BusinessControl businessControl;
 
-    private Label tobeReplacedLabel;
+    private DoubleSliderControl sliderControl;
 
     DropDownChooser(BusinessControl businessControl) {
         this.businessControl = businessControl;
@@ -27,13 +28,15 @@ class DropDownChooser extends VBox {
     }
 
     private void initializeParts() {
-        tobeReplacedLabel = new Label("to be replaced");
+        sliderControl = new DoubleSliderControl();
     }
 
     private void layoutParts() {
-        getChildren().addAll(tobeReplacedLabel);
+        getChildren().addAll(sliderControl);
     }
 
     private void setupBindings() {
+        businessControl.startingValueProperty().bindBidirectional(sliderControl.minValueProperty());
+        businessControl.finishingValueProperty().bindBidirectional(sliderControl.maxValueProperty());
     }
 }
