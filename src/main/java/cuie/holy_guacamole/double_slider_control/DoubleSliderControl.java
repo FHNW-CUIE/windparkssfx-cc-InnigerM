@@ -28,7 +28,7 @@ public class DoubleSliderControl extends Region {
     private static final double MINIMUM_HEIGHT = MINIMUM_WIDTH / ASPECT_RATIO;
 
     private static final int MIN_VALUE = 1990;
-    private static final int MAX_VALUE = 2039;
+    private static final int MAX_VALUE = 2029;
 
     private static double width;
 
@@ -61,13 +61,13 @@ public class DoubleSliderControl extends Region {
     }
 
     private void initializeParts() {
-        leftThumb = new Circle(MARGIN, MARGIN, MARGIN / 2);
+        leftThumb = new Circle(MARGIN, MARGIN, MARGIN / 4);
         leftThumb.getStyleClass().add("left-thumb");
         setMinValue(2000);
 
-        rightThumb = new Circle(ARTBOARD_WIDTH - MARGIN, MARGIN, MARGIN / 2);
+        rightThumb = new Circle(ARTBOARD_WIDTH - MARGIN, MARGIN, MARGIN / 4);
         rightThumb.getStyleClass().add("right-thumb");
-        setMaxValue(2030);
+        setMaxValue(2020);
 
         line = new Line(MARGIN, MARGIN, ARTBOARD_WIDTH - MARGIN, MARGIN);
     }

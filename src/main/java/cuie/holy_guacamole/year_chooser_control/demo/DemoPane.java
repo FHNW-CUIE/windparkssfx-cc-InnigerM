@@ -36,8 +36,8 @@ class DemoPane extends BorderPane {
 
         yearChooserControl = new YearChooserControl();
 
-        startingYearSlider = new Slider(1990, 2039, 0);
-        finishingYearSlider = new Slider(1990, 2039, 0);
+        startingYearSlider = new Slider(1990, 2029, 0);
+        finishingYearSlider = new Slider(1990, 2029, 0);
 
         readOnlyBox = new CheckBox();
         readOnlyBox.setSelected(false);
