@@ -22,11 +22,10 @@ import javafx.scene.layout.StackPane;
 import javafx.stage.Popup;
 import javafx.util.Duration;
 
-//todo: durch eigenen Skin ersetzen
 class YearChooserSkin extends SkinBase<YearChooserControl> {
     private static final int IMG_SIZE = 12;
     private static final int IMG_OFFSET = 4;
-    private static final int PREF_WIDTH = 390;
+    private static final int PREF_WIDTH = 350;
 
     private static final String ANGLE_DOWN = "\uf107";
     private static final String ANGLE_UP = "\uf106";
@@ -232,13 +231,15 @@ class YearChooserSkin extends SkinBase<YearChooserControl> {
         });
 
         popup.setOnShown(event -> {
+            double scalingFactor = (startingPane.getWidth() + finishingPane.getWidth()) / PREF_WIDTH;
             startingChooserButton.setText(ANGLE_UP);
             finishingChooserButton.setText(ANGLE_UP);
-            dropDownChooser.setPrefWidth(PREF_WIDTH);
-            Point2D location = startingYear.localToScreen(drawingPane.getWidth() - dropDownChooser.getPrefWidth() - 3,
+            dropDownChooser.setPrefWidth(PREF_WIDTH * scalingFactor);
+            dropDownChooser.setPrefHeight(PREF_WIDTH / 6);
+            Point2D location = startingYear.localToScreen((startingPane.getWidth() + finishingPane.getWidth()) - dropDownChooser.getPrefWidth() - 3,
                     startingYear.getHeight() - 3);
 
-            popup.setX(location.getX() - 20);
+            popup.setX(location.getX() - 10);
             popup.setY(location.getY());
         });
 
@@ -375,5 +376,22 @@ class YearChooserSkin extends SkinBase<YearChooserControl> {
             invalidFinishingInputAnimation.stop();
         }
         invalidFinishingInputAnimation.play();
+    }
+
+    @Override
+    protected void layoutChildren(double v, double v1, double v2, double v3) {
+        super.layoutChildren(v, v1, v2, v3);
+        resize();
+    }
+
+    public void resize() {
+        double scalingFactor = (startingPane.getWidth() + finishingPane.getWidth()) / PREF_WIDTH;
+        dropDownChooser.setPrefWidth(PREF_WIDTH * scalingFactor);
+        dropDownChooser.setPrefHeight(PREF_WIDTH / 6);
+        Point2D location = startingYear.localToScreen((startingPane.getWidth() + finishingPane.getWidth()) - dropDownChooser.getPrefWidth() - 3,
+                startingYear.getHeight() - 3);
+
+        popup.setX(location.getX() - 10);
+        popup.setY(location.getY());
     }
 }

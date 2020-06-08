@@ -13,7 +13,6 @@ import javafx.scene.control.Control;
 import javafx.scene.control.Skin;
 import javafx.scene.text.Font;
 
-//todo: umbenennen
 public class YearChooserControl extends Control {
     private static final PseudoClass MANDATORY_CLASS = PseudoClass.getPseudoClass("mandatory");
     private static final PseudoClass STARTING_INVALID_CLASS = PseudoClass.getPseudoClass("starting-invalid");
@@ -22,18 +21,16 @@ public class YearChooserControl extends Control {
     private static final PseudoClass FINISHING_CONVERTIBLE_CLASS = PseudoClass.getPseudoClass("finishing-convertible");
 
 
-    //todo: durch die eigenen regulaeren Ausdruecke ersetzen
     static final String FORMATTED_INTEGER_PATTERN = "%d";
 
-    private static final String INTEGER_REGEX = "(19|20)([01239])[0-9]";
+    private static final String INTEGER_REGEX = "(19|20)([0129])[0-9]";
     private static final String CONVERTING_REGEX = "[0-9]{2}";
     private static final Pattern INTEGER_PATTERN = Pattern.compile(INTEGER_REGEX);
     private static final Pattern CONVERTING_PATTERN = Pattern.compile(CONVERTING_REGEX);
 
     private static final Integer STARTING_YEAR_MIN = 1990;
-    private static final Integer FINISHING_YEAR_MAX = 2039;
+    private static final Integer FINISHING_YEAR_MAX = 2029;
 
-    //todo: Integer bei Bedarf ersetzen
     private final IntegerProperty startingValue = new SimpleIntegerProperty();
     private final StringProperty startingUserFacingText = new SimpleStringProperty();
 
@@ -75,7 +72,6 @@ public class YearChooserControl extends Control {
         }
     };
 
-    //todo: ergaenzen um convertible
 
     private final BooleanProperty readOnly = new SimpleBooleanProperty();
     private final StringProperty startingLabel = new SimpleStringProperty();
@@ -150,7 +146,6 @@ public class YearChooserControl extends Control {
         setFinishingUserFacingText(convertToString(getFinishingValue()));
     }
 
-    //todo: durch geeignete Konvertierungslogik ersetzen
     private void addValueChangeListener() {
         startingUserFacingText.addListener((observable, oldValue, userInput) -> {
             if (isMandatory() && (userInput == null || userInput.isEmpty())) {
@@ -225,8 +220,6 @@ public class YearChooserControl extends Control {
             setFinishingUserFacingText(convertToString(newValue.intValue()));
         });
     }
-
-    //todo: Forgiving Format implementieren
 
     public void loadFonts(String... font) {
         for (String f : font) {
