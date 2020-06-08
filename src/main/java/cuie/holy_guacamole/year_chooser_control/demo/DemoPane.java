@@ -51,7 +51,7 @@ class DemoPane extends BorderPane {
     private void layoutControls() {
         setCenter(yearChooserControl);
         VBox box = new VBox(10,
-                new Label("Business Control Properties"),
+                new Label("Year Chooser Properties"),
                 new Label("Starting Year"), startingYearSlider,
                 new Label("Finishing Year"), finishingYearSlider,
                 new Label("readOnly"), readOnlyBox,

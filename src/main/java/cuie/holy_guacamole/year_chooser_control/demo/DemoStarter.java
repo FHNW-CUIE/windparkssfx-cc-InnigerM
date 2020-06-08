@@ -14,7 +14,7 @@ public class DemoStarter extends Application {
 
         Scene scene = new Scene(rootPanel);
 
-        primaryStage.setTitle("Business Control Demo");
+        primaryStage.setTitle("Year Chooser Demo");
         primaryStage.setScene(scene);
 
         primaryStage.show();
