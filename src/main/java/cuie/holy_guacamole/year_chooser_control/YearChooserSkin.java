@@ -64,7 +64,7 @@ class YearChooserSkin extends SkinBase<YearChooserControl> {
         }
     }
 
-    private static final String STYLE_CSS = "style.css";
+    private static final String STYLE_CSS = "yearChooser.css";
 
     // all parts
     private TextField startingYear;

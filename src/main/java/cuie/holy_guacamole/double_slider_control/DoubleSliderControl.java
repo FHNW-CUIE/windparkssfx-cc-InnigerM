@@ -55,7 +55,7 @@ public class DoubleSliderControl extends Region {
 
     private void initializeSelf() {
         loadFonts("/fonts/Lato/Lato-Lig.ttf", "/fonts/Lato/Lato-Reg.ttf");
-        addStylesheetFiles("style.css");
+        addStylesheetFiles("doubleSlider.css");
 
         getStyleClass().add("double-slider-control");
     }
