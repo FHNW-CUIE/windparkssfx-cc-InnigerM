@@ -10,6 +10,7 @@
 * *_Ergänzen Sie hier welche OOP2-Teams Ihr Projekt erfolgreich integriert haben._*
 * _Schoder Mike_
 * _Attiger Manuel_
+* _Vonesch Tobias_
 
 === Abgabe
 
