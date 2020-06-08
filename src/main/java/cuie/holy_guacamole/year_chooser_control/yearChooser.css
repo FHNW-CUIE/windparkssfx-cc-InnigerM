@@ -6,6 +6,7 @@
 
 .business-control .drawing-pane {
     -fx-background-color: transparent;
+    -fx-alignment: center-left;
 }
 
 .business-control .starting-pane {

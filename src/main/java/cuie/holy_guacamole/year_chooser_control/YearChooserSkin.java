@@ -25,7 +25,7 @@ import javafx.util.Duration;
 class YearChooserSkin extends SkinBase<YearChooserControl> {
     private static final int IMG_SIZE = 12;
     private static final int IMG_OFFSET = 4;
-    private static final int PREF_WIDTH = 350;
+    private static final int PREF_WIDTH = 450;
 
     private static final String ANGLE_DOWN = "\uf107";
     private static final String ANGLE_UP = "\uf106";
@@ -71,6 +71,8 @@ class YearChooserSkin extends SkinBase<YearChooserControl> {
     private TextField finishingYear;
     private Label startingReadOnlyYear;
     private Label finishingReadOnlyYear;
+    private Label startingYearLabel;
+    private Label finishingYearLabel;
     private Popup popup;
     private Pane dropDownChooser;
     private Button startingChooserButton;
@@ -114,6 +116,12 @@ class YearChooserSkin extends SkinBase<YearChooserControl> {
 
         finishingReadOnlyYear = new Label();
         finishingReadOnlyYear.getStyleClass().add("read-only-node");
+
+        startingYearLabel = new Label("Baubeginn:");
+        startingYearLabel.getStyleClass().add("starting-year-label");
+
+        finishingYearLabel = new Label("Fertigstellung:");
+        finishingYearLabel.getStyleClass().add("finishing-year-label");
 
         StartingState.VALID.imageView.setOpacity(0.0);
 
@@ -167,7 +175,8 @@ class YearChooserSkin extends SkinBase<YearChooserControl> {
         StackPane.setAlignment(finishingYear, Pos.CENTER_LEFT);
         StackPane.setAlignment(finishingReadOnlyYear, Pos.CENTER_LEFT);
 
-        drawingPane.getChildren().addAll(startingPane, finishingPane);
+        drawingPane.getChildren().addAll(startingYearLabel, startingPane, finishingYearLabel, finishingPane);
+        drawingPane.setPrefWidth(650);
         getChildren().add(drawingPane);
     }
 
@@ -231,15 +240,15 @@ class YearChooserSkin extends SkinBase<YearChooserControl> {
         });
 
         popup.setOnShown(event -> {
-            double scalingFactor = (startingPane.getWidth() + finishingPane.getWidth()) / PREF_WIDTH;
+            double scalingFactor = (startingPane.getWidth() + finishingPane.getWidth() + finishingYearLabel.getWidth() -20) / PREF_WIDTH;
             startingChooserButton.setText(ANGLE_UP);
             finishingChooserButton.setText(ANGLE_UP);
             dropDownChooser.setPrefWidth(PREF_WIDTH * scalingFactor);
             dropDownChooser.setPrefHeight(PREF_WIDTH / 6);
-            Point2D location = startingYear.localToScreen((startingPane.getWidth() + finishingPane.getWidth()) - dropDownChooser.getPrefWidth() - 3,
+            Point2D location = startingYear.localToScreen((startingPane.getWidth() + finishingPane.getWidth() + finishingYearLabel.getWidth()) - dropDownChooser.getPrefWidth() - 3,
                     startingYear.getHeight() - 3);
 
-            popup.setX(location.getX() - 10);
+            popup.setX(location.getX() - 20);
             popup.setY(location.getY());
         });
 
@@ -385,13 +394,13 @@ class YearChooserSkin extends SkinBase<YearChooserControl> {
     }
 
     public void resize() {
-        double scalingFactor = (startingPane.getWidth() + finishingPane.getWidth()) / PREF_WIDTH;
+        double scalingFactor = (startingPane.getWidth() + finishingPane.getWidth() + finishingYearLabel.getWidth() - 20) / PREF_WIDTH;
         dropDownChooser.setPrefWidth(PREF_WIDTH * scalingFactor);
         dropDownChooser.setPrefHeight(PREF_WIDTH / 6);
-        Point2D location = startingYear.localToScreen((startingPane.getWidth() + finishingPane.getWidth()) - dropDownChooser.getPrefWidth() - 3,
+        Point2D location = startingYear.localToScreen((startingPane.getWidth() + finishingPane.getWidth() + finishingYearLabel.getWidth()) - dropDownChooser.getPrefWidth() - 3,
                 startingYear.getHeight() - 3);
 
-        popup.setX(location.getX() - 10);
+        popup.setX(location.getX() - 20);
         popup.setY(location.getY());
     }
 }
