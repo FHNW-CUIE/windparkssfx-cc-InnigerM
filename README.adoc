@@ -8,6 +8,8 @@
 === Integriert in die OOP2-Projekte von
 
 * *_Ergänzen Sie hier welche OOP2-Teams Ihr Projekt erfolgreich integriert haben._*
+* _Schoder Mike_
+* _Attiger Manuel_
 
 === Abgabe
 
